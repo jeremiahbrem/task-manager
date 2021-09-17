@@ -1,0 +1,6 @@
+obj
+bin
+appsettings.Development.json
+.idea
+*.DotSettings.user
+docker-compose.override.yml
