@@ -18,8 +18,7 @@ namespace TaskManager.Tests.Integration.Tasks
 
             var content = CreateContent(task);
 
-            var client = Server.CreateClient();
-            var response = await client.PostAsync("/api/tasks/create", content);
+            var response = await SendPostRequest("/api/tasks/create", content);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

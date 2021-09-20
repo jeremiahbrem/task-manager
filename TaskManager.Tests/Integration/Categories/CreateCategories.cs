@@ -18,8 +18,7 @@ namespace TaskManager.Tests.Integration.Categories
 
             var content = CreateContent(category);
 
-            var client = Server.CreateClient();
-            var response = await client.PostAsync("/api/categories/create", content);
+            var response = await SendPostRequest("/api/categories/create", content);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

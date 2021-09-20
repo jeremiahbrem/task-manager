@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Common.Validation;
@@ -50,6 +52,20 @@ namespace TaskManager.Controllers
             await _repo.AddTask(createdTask);
 
             return new ValidationResult($"Task {task} created.");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetTasks()
+        {
+            var result = await _repo.GetTasks();
+
+            var tasks = result.Select(x => new
+            {
+                Name = x.Name,
+                Category = x.Category.Name
+            }).ToArray();
+
+            return new JsonResult(tasks);
         }
     }
 }

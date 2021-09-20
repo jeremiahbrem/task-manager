@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -21,18 +22,19 @@ namespace TaskManager.Tests
             using var ctx = CreateDbContext();
 
             ctx.Database.EnsureCreated();
-            var category = new Category { Name = "CategoryOne" };
-            ctx.Categories.Add(category);
+            ctx.SaveChanges();
+            ctx.Categories.Add(new Category { Name = "CategoryOne"});
             ctx.Categories.Add(new Category { Name = "CategoryTwo"});
+            ctx.SaveChanges();
+
+            var category = ctx.Set<Category>().First();
 
             ctx.Tasks.Add(new Task
             {
                 Name = "TaskOne",
                 Category = category,
             });
-
             ctx.SaveChanges();
-
         }
 
         public Database.TaskManagerContext CreateDbContext()

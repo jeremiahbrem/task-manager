@@ -54,7 +54,6 @@ namespace TaskManager.Tests.Integration
         {
             var json = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<JArray>(json);
-            Console.WriteLine(result);
             return result;
         }
     }

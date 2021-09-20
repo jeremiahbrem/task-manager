@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -24,6 +26,16 @@ namespace TaskManager.Models.Task
                 .FirstOrDefaultAsync(x => x.Name == name);
 
             return existingTask;
+        }
+
+        public async Task<List<Task>> GetTasks()
+        {
+            var result = await _context.Set<Task>()
+                .AsNoTracking()
+                .Include(x => x.Category)
+                .ToListAsync();
+
+            return result;
         }
 
         public async System.Threading.Tasks.Task AddTask(Task task)
