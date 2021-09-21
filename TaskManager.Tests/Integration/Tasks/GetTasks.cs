@@ -6,7 +6,7 @@ using Xunit;
 
 namespace TaskManager.Tests.Integration.Tasks
 {
-    public class GetTasks  : IntegrationApiTestBase
+    public class GetTasks : IntegrationApiTestBase
     {
         [Fact]
         public async Task GetsAllTasks()
@@ -22,7 +22,7 @@ namespace TaskManager.Tests.Integration.Tasks
                 )
             };
 
-        result.Should().BeEquivalentTo(expected);
+            result.Should().BeEquivalentTo(expected);
         }
     }
 }

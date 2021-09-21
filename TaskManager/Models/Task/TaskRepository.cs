@@ -23,6 +23,7 @@ namespace TaskManager.Models.Task
         public async Task<Task?> GetTask(string name)
         {
             var existingTask = await _context.Tasks
+                .Include(x => x.Category)
                 .FirstOrDefaultAsync(x => x.Name == name);
 
             return existingTask;

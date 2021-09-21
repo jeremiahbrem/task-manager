@@ -67,5 +67,22 @@ namespace TaskManager.Controllers
 
             return new JsonResult(tasks);
         }
+
+        [HttpGet("{name}")]
+        public async Task<ActionResult> GetTask(string name)
+        {
+            var task = await _repo.GetTask(name);
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            return new JsonResult(new
+            {
+                Name = task.Name,
+                Category = task.Category.Name
+            });
+        }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -43,10 +42,10 @@ namespace TaskManager.Tests.Integration
             return response;
         }
 
-        protected async Task<ValidationResponse> GetJsonObject(HttpResponseMessage response)
+        protected async Task<T> GetJsonObject<T>(HttpResponseMessage response) where T : class
         {
             var json = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<ValidationResponse>(json);
+            var result = JsonConvert.DeserializeObject<T>(json);
             return result;
         }
 

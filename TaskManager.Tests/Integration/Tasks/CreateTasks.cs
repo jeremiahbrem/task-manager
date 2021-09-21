@@ -1,6 +1,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
+using TaskManager.Common.Validation;
 using Xunit;
 
 namespace TaskManager.Tests.Integration.Tasks
@@ -35,7 +36,7 @@ namespace TaskManager.Tests.Integration.Tasks
             var content = CreateContent(task);
 
             var response = await SendPostRequest("/api/tasks/create", content);
-            var result = await GetJsonObject(response);
+            var result = await GetJsonObject<ValidationResponse>(response);
 
             var expected = CreateExpectedResponse(
                 "Duplicate task error",
@@ -58,7 +59,7 @@ namespace TaskManager.Tests.Integration.Tasks
             var content = CreateContent(task);
 
             var response = await SendPostRequest("/api/tasks/create", content);
-            var result = await GetJsonObject(response);
+            var result = await GetJsonObject<ValidationResponse>(response);
 
             var expected = CreateExpectedResponse(
                 "Invalid category",
@@ -81,7 +82,7 @@ namespace TaskManager.Tests.Integration.Tasks
             var content = CreateContent(task);
             var response = await SendPostRequest("/api/tasks/create", content);
 
-            var result = await GetJsonObject(response);
+            var result = await GetJsonObject<ValidationResponse>(response);
 
             var expected = CreateExpectedResponse(
                 "Validation failed",
