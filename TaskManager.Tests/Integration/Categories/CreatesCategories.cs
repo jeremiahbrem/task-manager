@@ -10,7 +10,7 @@ namespace TaskManager.Tests.Integration.Categories
     public class CreateCategories : IntegrationApiTestBase
     {
         [Fact]
-        public async Task CreateCategoryTest()
+        public async Task CreatesCategoryTest()
         {
             var category = new
             {

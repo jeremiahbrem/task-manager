@@ -6,7 +6,7 @@ using Xunit;
 
 namespace TaskManager.Tests.Integration.Tasks
 {
-    public class CreateTasks : IntegrationApiTestBase
+    public class CreatesTasks : IntegrationApiTestBase
     {
         [Fact]
         public async Task CreateTaskTest()

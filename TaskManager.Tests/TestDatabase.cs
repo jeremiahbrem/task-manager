@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using TaskManager.Models;
 using TaskManager.Models.Categories;
 using TaskManager.Models.Task;
+using TaskManager.Models.User;
 
 namespace TaskManager.Tests
 {
@@ -22,9 +23,9 @@ namespace TaskManager.Tests
             using var ctx = CreateDbContext();
 
             ctx.Database.EnsureCreated();
-            ctx.SaveChanges();
             ctx.Categories.Add(new Category { Name = "CategoryOne"});
             ctx.Categories.Add(new Category { Name = "CategoryTwo"});
+            ctx.Users.Add(new User {FirstName = "John", LastName = "Doe", Email = "john.doe@example.com"});
             ctx.SaveChanges();
 
             var category = ctx.Set<Category>().First();

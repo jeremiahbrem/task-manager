@@ -5,7 +5,7 @@ using Xunit;
 
 namespace TaskManager.Tests.Integration.Categories
 {
-    public class GetCategories : IntegrationApiTestBase
+    public class GetsCategories : IntegrationApiTestBase
     {
         [Fact]
         public async Task GetsAllCategories()
