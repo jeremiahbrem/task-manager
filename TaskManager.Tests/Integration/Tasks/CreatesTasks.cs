@@ -12,10 +12,15 @@ namespace TaskManager.Tests.Integration.Tasks
         [Fact]
         public async Task CreateTaskTest()
         {
-            var task = new TaskMother("Test Task", "CategoryOne").Task;
             var context = Server.CreateDbContext();
-            context.Tasks.Add(task);
+            context.Categories.Add(new CategoryMother("Category One").Category);
             await context.SaveChangesAsync();
+
+            var task = new
+            {
+                Name = "Task One",
+                Category = "Category One"
+            };
 
             var content = CreateContent(task);
 
@@ -27,13 +32,19 @@ namespace TaskManager.Tests.Integration.Tasks
         [Fact]
         public async Task SendsDuplicateTaskError()
         {
-            var task = new
+            var task = new TaskMother("TaskOne", "CategoryOne").Task;
+            var context = Server.CreateDbContext();
+            context.Categories.Add(task.Category);
+            context.Tasks.Add(task);
+            await context.SaveChangesAsync();
+
+            var duplicate = new
             {
-                name = "TaskOne",
-                category = "CategoryOne",
+                Name = "TaskOne",
+                Category = "CategoryOne"
             };
 
-            var content = CreateContent(task);
+            var content = CreateContent(duplicate);
 
             var response = await SendPostRequest("/api/tasks/create", content);
             var result = await GetJsonObject<ValidationResponse>(response);
@@ -52,8 +63,8 @@ namespace TaskManager.Tests.Integration.Tasks
         {
             var task = new
             {
-                name = "TaskOne",
-                category = "NonExistentCategory",
+                Name = "Test Task",
+                Category = "NonExistentCategory"
             };
 
             var content = CreateContent(task);
