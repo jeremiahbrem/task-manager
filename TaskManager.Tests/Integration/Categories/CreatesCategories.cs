@@ -1,23 +1,19 @@
-using System;
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
 using TaskManager.Common.Validation;
+using TaskManager.Tests.Mamas;
 using Xunit;
 
 namespace TaskManager.Tests.Integration.Categories
 {
-    public class CreateCategories : IntegrationApiTestBase
+    public class CreatesCategories : IntegrationApiTestBase
     {
         [Fact]
         public async Task CreatesCategoryTest()
         {
-            var category = new
-            {
-                name = "New Category",
-            };
-
-            var content = CreateContent(category);
+            var mother = new CategoryMother("New Category");
+            var content = CreateContent(mother.Category);
 
             var response = await SendPostRequest("/api/categories/create", content);
 
@@ -27,10 +23,12 @@ namespace TaskManager.Tests.Integration.Categories
         [Fact]
         public async Task SendsDuplicateCategoryError()
         {
-            var category = new
-            {
-                name = "CategoryOne",
-            };
+            var context = Server.CreateDbContext();
+
+            var mother = new CategoryMother("CategoryOne");
+            var category = mother.Category;
+            context.Categories.Add(category);
+            await context.SaveChangesAsync();
 
             var content = CreateContent(category);
 
