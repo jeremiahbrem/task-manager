@@ -7,7 +7,7 @@ using Xunit;
 
 namespace TaskManager.Tests.Integration.Categories
 {
-    public class CreatesCategories : IntegrationApiTestBase
+    public class CreatesCategories : CategoryTestBase
     {
         [Fact]
         public async Task CreatesCategoryTest()
@@ -23,12 +23,12 @@ namespace TaskManager.Tests.Integration.Categories
         [Fact]
         public async Task SendsDuplicateCategoryError()
         {
-            var context = Server.CreateDbContext();
+            await CreateCategory("CategoryOne");
 
-            var mother = new CategoryMother("CategoryOne");
-            var category = mother.Category;
-            context.Categories.Add(category);
-            await context.SaveChangesAsync();
+            var category = new
+            {
+                Name = "CategoryOne"
+            };
 
             var content = CreateContent(category);
 

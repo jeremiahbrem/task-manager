@@ -6,11 +6,13 @@ using Xunit;
 
 namespace TaskManager.Tests.Integration.Tasks
 {
-    public class GetsTasks : IntegrationApiTestBase
+    public class GetsTasks : TaskTestBase
     {
         [Fact]
         public async Task GetsAllTasks()
         {
+            await CreateTask("TaskOne", "CategoryOne");
+            await CreateTask("TaskTwo", "CategoryTwo");
             var response = await SendGetRequest("/api/tasks");
             var result = await GetJArray(response);
 
@@ -19,7 +21,11 @@ namespace TaskManager.Tests.Integration.Tasks
                 new (
                     new JProperty("name", "TaskOne"),
                     new JProperty("category", "CategoryOne")
-                )
+                ),
+                new (
+                    new JProperty("name", "TaskTwo"),
+                    new JProperty("category", "CategoryTwo")
+                ),
             };
 
             result.Should().BeEquivalentTo(expected);

@@ -7,7 +7,7 @@ using Xunit;
 
 namespace TaskManager.Tests.Integration.Tasks
 {
-    public class CreatesTasks : IntegrationApiTestBase
+    public class CreatesTasks : TaskTestBase
     {
         [Fact]
         public async Task CreateTaskTest()
@@ -32,11 +32,7 @@ namespace TaskManager.Tests.Integration.Tasks
         [Fact]
         public async Task SendsDuplicateTaskError()
         {
-            var task = new TaskMother("TaskOne", "CategoryOne").Task;
-            var context = Server.CreateDbContext();
-            context.Categories.Add(task.Category);
-            context.Tasks.Add(task);
-            await context.SaveChangesAsync();
+            await CreateTask("TaskOne", "CategoryOne");
 
             var duplicate = new
             {
