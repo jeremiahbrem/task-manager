@@ -1,108 +1,54 @@
 using System.Net;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using TaskManager.Common.Validation;
+using Microsoft.EntityFrameworkCore;
+using Task = TaskManager.Models.Task;
+using TaskManager.Models.User;
+using TaskManager.Tests.Mamas;
 using Xunit;
 
 namespace TaskManager.Tests.Integration.ScheduledTasks
 {
     public class CreatesScheduledTasks : IntegrationApiTestBase
     {
+        private readonly User _user = new UserMother("Jane", "Doe", "jane.doe@example.com").User;
+        private readonly Task.Task _task = new TaskMother("Test Task", "Category One").Task;
+        private readonly Task.Task _taskTwo = new TaskMother("Test Task Two", "Category One").Task;
+
         [Fact]
-        public async Task CreateScheduledTaskTest()
+        public async System.Threading.Tasks.Task CreateScheduledTaskTest()
         {
+            var context = Server.CreateDbContext();
+
+            await CreateTask(_task.Name, _task.Category.Name, context);
+            await CreateUser(_user.FirstName, _user.LastName, _user.Email, context);
+            await CreateScheduledTask(_task, _user, context);
+
+            var precedingTask = await context.ScheduledTasks.FirstOrDefaultAsync();
+
+            await CreateTask("Test Task Two", _task.Category.Name, context);
 
             var scheduledTask = new
             {
-                task = new { name = "Test Task", category = "CategoryOne" },
-                preceding = new
-                {
-                    task = new { name = "Task 2", category = "CategoryTwo" },
-                    user = new
-                    {
-                        firstName = "Jane",
-                        lastName = "Doe",
-                        email = "jane.doe@example.com",
-                    }
-                }
+                Task = _taskTwo.Name,
+                PrecedingId = precedingTask.ScheduledTaskId,
+                Email = _user.Email
             };
 
             var content = CreateContent(scheduledTask);
 
             var response = await SendPostRequest("/api/scheduled-tasks/create", content);
 
+            var newScheduledTask = await context.ScheduledTasks.FirstOrDefaultAsync(x => x.Task.Name == _taskTwo.Name);
+            var task = await context.Tasks.FirstOrDefaultAsync(x => x.Name == _taskTwo.Name);
+            var user = await context.Users.FirstOrDefaultAsync(x => x.Email == _user.Email);
+
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact(Skip = "setup")]
-        public async Task SendsDuplicateTaskError()
-        {
-            var task = new
+            newScheduledTask.Should().BeEquivalentTo(new
             {
-                name = "TaskOne",
-                category = "CategoryOne",
-            };
-
-            var content = CreateContent(task);
-
-            var response = await SendPostRequest("/api/tasks/create", content);
-            var result = await GetJsonObject<ValidationResponse>(response);
-
-            var expected = CreateExpectedResponse(
-                "Duplicate task error",
-                "A task with name TaskOne already exists."
-            );
-
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            result.Should().BeEquivalentTo(expected);
-        }
-
-        [Fact(Skip = "setup")]
-        public async Task SendsInvalidCategoryError()
-        {
-            var task = new
-            {
-                name = "TaskOne",
-                category = "NonExistentCategory",
-            };
-
-            var content = CreateContent(task);
-
-            var response = await SendPostRequest("/api/tasks/create", content);
-            var result = await GetJsonObject<ValidationResponse>(response);
-
-            var expected = CreateExpectedResponse(
-                "Invalid category",
-                "Invalid category NonExistentCategory. You must use an existing category."
-            );
-
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            result.Should().BeEquivalentTo(expected);
-        }
-
-        [Fact(Skip = "setup")]
-        public async Task SendsInvalidModelError()
-        {
-            var task = new
-            {
-                someKey = "Some property",
-                name = "new task"
-            };
-
-            var content = CreateContent(task);
-            var response = await SendPostRequest("/api/tasks/create", content);
-
-            var result = await GetJsonObject<ValidationResponse>(response);
-
-            var expected = CreateExpectedResponse(
-                "Validation failed",
-                "The Category field is required."
-            );
-
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            result.Should().BeEquivalentTo(expected);
+                Task = task,
+                User = user,
+                PrecedingTask = precedingTask
+            });
         }
     }
 }

@@ -5,13 +5,14 @@ using Xunit;
 
 namespace TaskManager.Tests.Integration.Categories
 {
-    public class GetsCategories : CategoryTestBase
+    public class GetsCategories : IntegrationApiTestBase
     {
         [Fact]
         public async Task GetsAllCategories()
         {
-            await CreateCategory("CategoryOne");
-            await CreateCategory("CategoryTwo");
+            var context = Server.CreateDbContext();
+            await CreateCategory("CategoryOne", context);
+            await CreateCategory("CategoryTwo", context);
 
             var response = await SendGetRequest("/api/categories");
 

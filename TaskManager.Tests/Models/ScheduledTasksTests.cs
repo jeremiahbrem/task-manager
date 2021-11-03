@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using FluentAssertions;
 using TaskManager.Models.Categories;
 using TaskManager.Models.ScheduledTask;
@@ -28,8 +27,7 @@ namespace TaskManager.Tests.Models
             {
                 FirstName = "John",
                 LastName = "Doe",
-                Email = "john.doe@example.com",
-                Tasks = new List<ScheduledTask>()
+                Email = "john.doe@example.com"
             };
 
             var category = new Category {Name = "Maintenance"};

@@ -28,6 +28,8 @@ namespace TaskManager.Tests.Integration.Users
         [Fact]
         public async Task SendsDuplicateEmailError()
         {
+            var context = Server.CreateDbContext();
+            await CreateUser("John", "Doe", "john.doe@example.com", context);
             var user = new
             {
                 firstName = "John",

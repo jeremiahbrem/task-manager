@@ -1,17 +1,17 @@
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
-using TaskManager.Tests.Mamas;
 using Xunit;
 
 namespace TaskManager.Tests.Integration.Tasks
 {
-    public class GetTask : TaskTestBase
+    public class GetTask : IntegrationApiTestBase
     {
         [Fact]
         public async Task GetsTask()
         {
-            await CreateTask("TaskOne", "CategoryOne");
+            var context = Server.CreateDbContext();
+            await CreateTask("TaskOne", "CategoryOne", context);
 
             var response = await SendGetRequest("/api/tasks/TaskOne");
             var result = await GetJsonObject<TaskResponse>(response);

@@ -1,13 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TaskManager.Common.Validation;
-using TaskManager.Common.Validation.ValidationModel;
 using TaskManager.Database;
-using TaskManager.Models.Categories;
 
 namespace TaskManager.Models.Categories
 {

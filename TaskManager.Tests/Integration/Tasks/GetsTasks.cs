@@ -6,13 +6,14 @@ using Xunit;
 
 namespace TaskManager.Tests.Integration.Tasks
 {
-    public class GetsTasks : TaskTestBase
+    public class GetsTasks : IntegrationApiTestBase
     {
         [Fact]
         public async Task GetsAllTasks()
         {
-            await CreateTask("TaskOne", "CategoryOne");
-            await CreateTask("TaskTwo", "CategoryTwo");
+            var context = Server.CreateDbContext();
+            await CreateTask("TaskOne", "CategoryOne", context);
+            await CreateTask("TaskTwo", "CategoryTwo", context);
             var response = await SendGetRequest("/api/tasks");
             var result = await GetJArray(response);
 

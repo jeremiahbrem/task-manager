@@ -1,20 +1,19 @@
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using TaskManager.Common.Validation;
-using TaskManager.Tests.Mamas;
 using Xunit;
 
 namespace TaskManager.Tests.Integration.Tasks
 {
-    public class CreatesTasks : TaskTestBase
+    public class CreatesTasks : IntegrationApiTestBase
     {
         [Fact]
         public async Task CreateTaskTest()
         {
             var context = Server.CreateDbContext();
-            context.Categories.Add(new CategoryMother("Category One").Category);
-            await context.SaveChangesAsync();
+            await CreateCategory("Category One", context);
 
             var task = new
             {
@@ -26,13 +25,17 @@ namespace TaskManager.Tests.Integration.Tasks
 
             var response = await SendPostRequest("/api/tasks/create", content);
 
+            var newTask = await context.Tasks.FirstOrDefaultAsync();
+
+            newTask.Should().BeEquivalentTo(new { Name = "Task One", Category = new { Name = "Category One" } });
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public async Task SendsDuplicateTaskError()
         {
-            await CreateTask("TaskOne", "CategoryOne");
+            var context = Server.CreateDbContext();
+            await CreateTask("TaskOne", "CategoryOne", context);
 
             var duplicate = new
             {

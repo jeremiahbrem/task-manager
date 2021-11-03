@@ -10,6 +10,8 @@ namespace TaskManager.Tests.Integration.Users
         [Fact]
         public async Task GetsUserTest()
         {
+            var context = Server.CreateDbContext();
+            await CreateUser("John", "Doe", "john.doe@example.com", context);
             var response = await SendGetRequest("/api/users/john.doe@example.com");
             var result = await GetJsonObject<UserResponse>(response);
 
