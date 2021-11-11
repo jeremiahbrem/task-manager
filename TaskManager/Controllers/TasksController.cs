@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManager.Common.Validation;
 using TaskManager.Common.Validation.ValidationModel;
 using TaskManager.Database;
-using TaskManager.Models.Categories;
-using Task = TaskManager.Models.Task;
+using TaskManager.Models.Domain.Categories;
+using TaskManager.Models.Domain.Task;
+using Task = System.Threading.Tasks.Task;
 
 namespace TaskManager.Controllers
 {
@@ -14,17 +15,17 @@ namespace TaskManager.Controllers
     [ValidateModel]
     public class TasksController : Controller
     {
-        private readonly Task.TaskRepository _repo;
+        private readonly TaskRepository _repo;
         private readonly CategoryRepository _categoryRepo;
 
         public TasksController(TaskManagerContext context)
         {
-            _repo = new Task.TaskRepository(context);
+            _repo = new TaskRepository(context);
             _categoryRepo = new CategoryRepository(context);
         }
 
         [HttpPost("create")]
-        public async Task<ActionResult> PostCreate([FromBody]Task.TaskCreate task)
+        public async Task<ActionResult> PostCreate([FromBody]TaskCreate task)
         {
             var existingCategory = await _categoryRepo.GetCategory(task.Category);
 

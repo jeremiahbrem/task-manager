@@ -1,10 +1,12 @@
-using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace TaskManager.Models.ScheduledTask
+namespace TaskManager.Models.Domain.ScheduledTask
 {
     public class ScheduledTaskCreate
     {
+        [Required]
         public string Email { get; set; } = "";
+        [Required]
         public string Task { get; set; } = "";
         public string? PrecedingId { get; set; }
 

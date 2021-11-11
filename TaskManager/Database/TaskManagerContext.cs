@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using TaskManager.Models;
-using TaskManager.Models.Categories;
-using TaskManager.Models.ScheduledTask;
-using TaskManager.Models.Task;
-using TaskManager.Models.User;
+using TaskManager.Models.Domain.Categories;
+using TaskManager.Models.Domain.ScheduledTask;
+using TaskManager.Models.Domain.Task;
+using TaskManager.Models.Domain.User;
 
 namespace TaskManager.Database
 {
@@ -27,6 +26,10 @@ namespace TaskManager.Database
 
             builder.Entity<Category>()
                 .HasIndex(x => x.Name)
+                .IsUnique();
+
+            builder.Entity<ScheduledTask>()
+                .HasIndex(x => x.ScheduledTaskId)
                 .IsUnique();
         }
 

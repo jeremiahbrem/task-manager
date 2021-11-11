@@ -1,4 +1,4 @@
-using TaskManager.Models.User;
+using TaskManager.Models.Domain.User;
 
 namespace TaskManager.Tests.Mamas
 {

@@ -1,60 +1,88 @@
 using System;
 using FluentAssertions;
-using TaskManager.Models.Categories;
-using TaskManager.Models.ScheduledTask;
-using TaskManager.Models.Task;
-using TaskManager.Models.User;
+using TaskManager.Models.Domain.Categories;
+using TaskManager.Models.Domain.ScheduledTask;
+using TaskManager.Models.Domain.Task;
+using TaskManager.Models.Domain.User;
 using Xunit;
 
 namespace TaskManager.Tests.Models
 {
     public class ScheduledTasksTests
     {
+        private readonly string _scheduledTaskId = Guid.NewGuid().ToString();
+        private readonly string _precedingId = Guid.NewGuid().ToString();
+
+        private readonly User _user = new User
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com"
+        };
+
+        private readonly Category _category = new Category {Name = "Maintenance"};
+
+        private readonly Task _task = new Task
+        {
+            Name = "Change oil",
+            Category = new Category {Name = "Maintenance"},
+        };
+
         [Fact]
         public void ToCreateScheduledTaskTest()
         {
-            var scheduledTaskId = Guid.NewGuid().ToString();
-            var precedingId = Guid.NewGuid().ToString();
-
             var request = new ScheduledTaskCreate
             {
                 Task = "Change oil",
                 Email = "john.doe@example.com",
-                PrecedingId = precedingId,
+                PrecedingId = _precedingId,
             };
 
-            var user = new User
-            {
-                FirstName = "John",
-                LastName = "Doe",
-                Email = "john.doe@example.com"
-            };
+            var preceding = CreatePreceding();
 
-            var category = new Category {Name = "Maintenance"};
-
-            var task = new Task
-            {
-                Name = "Change oil",
-                Category = category,
-            };
-
-            var preceding = new ScheduledTask
-            {
-                User = user,
-                Task = new Task { Name = "Rotate tires", Category = category },
-                ScheduledTaskId = precedingId,
-                Id = 1234
-            };
-
-            var result = request.ToCreatedScheduledTask(scheduledTaskId, task, user, preceding.Id);
+            var result = request.ToCreatedScheduledTask(_scheduledTaskId, _task, _user, preceding.Id);
 
             result.Should().BeEquivalentTo(new ScheduledTask
             {
-                User = user,
-                Task = task,
+                User = _user,
+                Task = _task,
                 PrecedingTaskId = preceding.Id,
-                ScheduledTaskId = scheduledTaskId,
+                ScheduledTaskId = _scheduledTaskId,
             });
+        }
+
+        [Fact]
+
+        public void ToQueryObjectTest()
+        {
+            var preceding = CreatePreceding();
+
+            var scheduledTask = new ScheduledTask
+            {
+                Task = _task,
+                User = _user,
+                PrecedingTask = preceding
+            };
+
+            var result = scheduledTask.ToQueryObject();
+
+            result.Should().BeEquivalentTo(new
+            {
+                User = _user.ToQueryObject(),
+                Task = _task.ToQueryObject(),
+                Preceding = preceding.ToQueryObject(),
+            });
+        }
+
+        private ScheduledTask CreatePreceding()
+        {
+            return new ScheduledTask
+            {
+                User = _user,
+                Task = new Task {Name = "Rotate tires", Category = _category},
+                ScheduledTaskId = _precedingId,
+                Id = 1234
+            };
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Database;
 
-namespace TaskManager.Models.Categories
+namespace TaskManager.Models.Domain.Categories
 {
     public class CategoryRepository
     {

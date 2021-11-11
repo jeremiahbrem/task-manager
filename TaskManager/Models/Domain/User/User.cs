@@ -1,23 +1,19 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace TaskManager.Models.User
+namespace TaskManager.Models.Domain.User
 {
-    public class UserCreate
+    public class User
     {
-        [Required]
+        public int Id { get; set; }
         public string FirstName { get; set; } = "";
-        [Required]
         public string LastName { get; set; } = "";
-        [Required]
         public string Email { get; set; } = "";
 
-        public User ToCreatedUser()
+        public Query.User ToQueryObject()
         {
-            return new User
+            return new Query.User
             {
                 FirstName = FirstName,
                 LastName = LastName,
-                Email = Email,
+                Email = Email
             };
         }
     }

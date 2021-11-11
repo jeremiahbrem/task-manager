@@ -1,7 +1,6 @@
 using FluentAssertions;
-using TaskManager.Models;
-using TaskManager.Models.Categories;
-using TaskManager.Models.Task;
+using TaskManager.Models.Domain.Categories;
+using TaskManager.Models.Domain.Task;
 using Xunit;
 
 namespace TaskManager.Tests.Models
@@ -28,6 +27,29 @@ namespace TaskManager.Tests.Models
             {
                 Name = "Change oil",
                 Category = category,
+            });
+        }
+
+        [Fact]
+        public void ToQueryObjectTest()
+        {
+            var category = new Category
+            {
+                Name = "Maintentance",
+            };
+
+            var task = new Task
+            {
+                Name = "Change oil",
+                Category = category,
+            };
+
+            var result = task.ToQueryObject();
+
+            result.Should().BeEquivalentTo(new
+            {
+                Name = "Change oil",
+                Category = category.ToQueryObject(),
             });
         }
     }

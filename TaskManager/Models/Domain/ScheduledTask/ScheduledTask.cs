@@ -1,4 +1,4 @@
-namespace TaskManager.Models.ScheduledTask
+namespace TaskManager.Models.Domain.ScheduledTask
 {
     public class ScheduledTask
     {
@@ -11,5 +11,15 @@ namespace TaskManager.Models.ScheduledTask
         public Task.Task Task { get; set; } = null!;
         public ScheduledTask? PrecedingTask { get; set; }
         public User.User User { get; set; } = null!;
+
+        public Query.ScheduledTask ToQueryObject()
+        {
+            return new Query.ScheduledTask
+            {
+                Task = Task.ToQueryObject(),
+                User = User.ToQueryObject(),
+                Preceding = PrecedingTask?.ToQueryObject()
+            };
+        }
     }
 }

@@ -8,10 +8,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaskManager.Common.Validation;
 using TaskManager.Database;
-using TaskManager.Models.ScheduledTask;
-using TaskManager.Models.User;
+using TaskManager.Models.Domain.ScheduledTask;
+using TaskManager.Models.Domain.User;
 using TaskManager.Tests.Mamas;
-using TaskModel = TaskManager.Models.Task;
+using Task = TaskManager.Models.Domain.Task.Task;
 
 namespace TaskManager.Tests.Integration
 {
@@ -70,7 +70,7 @@ namespace TaskManager.Tests.Integration
             return user;
         }
 
-        protected static async Task<TaskModel.Task> CreateTask(string taskName, string categoryName, TaskManagerContext context)
+        protected static async Task<Task> CreateTask(string taskName, string categoryName, TaskManagerContext context)
         {
             var task = new TaskMother(taskName, categoryName).Task;
             context.Categories.Add(task.Category);
@@ -80,7 +80,7 @@ namespace TaskManager.Tests.Integration
         }
 
         protected static async Task<ScheduledTask> CreateScheduledTask(
-            TaskModel.Task task,
+            Task task,
             User user,
             TaskManagerContext context,
             ScheduledTask preceding = null)
@@ -91,7 +91,7 @@ namespace TaskManager.Tests.Integration
             return scheduledTask;
         }
 
-        protected static async Task CreateCategory(string name, TaskManagerContext context)
+        protected static async System.Threading.Tasks.Task CreateCategory(string name, TaskManagerContext context)
         {
             var mother = new CategoryMother(name);
             var category = mother.Category;

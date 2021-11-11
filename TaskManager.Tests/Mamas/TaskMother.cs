@@ -1,5 +1,5 @@
-using TaskManager.Models.Categories;
-using TaskManager.Models.Task;
+using TaskManager.Models.Domain.Categories;
+using TaskManager.Models.Domain.Task;
 
 namespace TaskManager.Tests.Mamas
 {

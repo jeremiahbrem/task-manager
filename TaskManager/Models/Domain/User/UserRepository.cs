@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Database;
 
-namespace TaskManager.Models.User
+namespace TaskManager.Models.Domain.User
 {
     public class UserRepository
     {

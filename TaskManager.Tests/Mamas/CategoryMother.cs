@@ -1,4 +1,4 @@
-using TaskManager.Models.Categories;
+using TaskManager.Models.Domain.Categories;
 
 namespace TaskManager.Tests.Mamas
 {

@@ -1,6 +1,6 @@
-using TaskManager.Models.ScheduledTask;
-using TaskManager.Models.Task;
-using TaskManager.Models.User;
+using TaskManager.Models.Domain.ScheduledTask;
+using TaskManager.Models.Domain.Task;
+using TaskManager.Models.Domain.User;
 
 namespace TaskManager.Tests.Integration.ScheduledTasks
 {

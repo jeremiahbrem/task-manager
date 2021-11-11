@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Common.Validation;
 using TaskManager.Common.Validation.ValidationModel;
 using TaskManager.Database;
-using TaskManager.Models.ScheduledTask;
-using TaskManager.Models.User;
-using Task = TaskManager.Models.Task;
+using TaskManager.Models.Domain.ScheduledTask;
+using TaskManager.Models.Domain.Task;
+using TaskManager.Models.Domain.User;
+using Task = System.Threading.Tasks.Task;
 
 namespace TaskManager.Controllers
 {
@@ -16,13 +18,13 @@ namespace TaskManager.Controllers
     public class ScheduledTasksController : Controller
     {
         private readonly ScheduledTaskRepository _repo;
-        private readonly Task.TaskRepository _taskRepo;
+        private readonly TaskRepository _taskRepo;
         private readonly UserRepository _userRepo;
 
         public ScheduledTasksController(TaskManagerContext context)
         {
             _repo = new ScheduledTaskRepository(context);
-            _taskRepo = new Task.TaskRepository(context);
+            _taskRepo = new TaskRepository(context);
             _userRepo = new UserRepository(context);
         }
 

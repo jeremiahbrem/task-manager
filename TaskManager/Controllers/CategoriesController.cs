@@ -7,7 +7,7 @@ using TaskManager.Common.Validation;
 using TaskManager.Common.Validation.ValidationModel;
 using TaskManager.Database;
 using TaskManager.Models;
-using TaskManager.Models.Categories;
+using TaskManager.Models.Domain.Categories;
 
 namespace TaskManager.Controllers
 {

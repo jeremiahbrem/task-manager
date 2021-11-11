@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManager.Common.Validation;
 using TaskManager.Common.Validation.ValidationModel;
 using TaskManager.Database;
-using TaskManager.Models.User;
+using TaskManager.Models.Domain.User;
 
 namespace TaskManager.Controllers
 {
