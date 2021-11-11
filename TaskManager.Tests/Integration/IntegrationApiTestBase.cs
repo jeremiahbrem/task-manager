@@ -62,22 +62,24 @@ namespace TaskManager.Tests.Integration
             return result;
         }
 
-        protected static async Task CreateUser(string firstName, string lastName, string email, TaskManagerContext context)
+        protected static async Task<User> CreateUser(string firstName, string lastName, string email, TaskManagerContext context)
         {
             var user = new UserMother(firstName, lastName, email).User;
             context.Users.Add(user);
             await context.SaveChangesAsync();
+            return user;
         }
 
-        protected static async Task CreateTask(string taskName, string categoryName, TaskManagerContext context)
+        protected static async Task<TaskModel.Task> CreateTask(string taskName, string categoryName, TaskManagerContext context)
         {
             var task = new TaskMother(taskName, categoryName).Task;
             context.Categories.Add(task.Category);
             context.Tasks.Add(task);
             await context.SaveChangesAsync();
+            return task;
         }
 
-        protected static async Task CreateScheduledTask(
+        protected static async Task<ScheduledTask> CreateScheduledTask(
             TaskModel.Task task,
             User user,
             TaskManagerContext context,
@@ -86,6 +88,7 @@ namespace TaskManager.Tests.Integration
             var scheduledTask = new ScheduledTaskMother(task, user, preceding).ScheduledTask;
             context.ScheduledTasks.Add(scheduledTask);
             await context.SaveChangesAsync();
+            return scheduledTask;
         }
 
         protected static async Task CreateCategory(string name, TaskManagerContext context)
