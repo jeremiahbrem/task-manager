@@ -1,30 +1,14 @@
 version: 2.1
-orbs:
-  slack: circleci/slack@4.4.2
-commands:
-  notify-fail:
-    description: Notify slack of a failure
-    steps:
-      - slack/notify:
-          event: fail
-          custom: |
-            {
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "`${CIRCLE_JOB}` Failed, `$CIRCLE_BRANCH` branch :red_circle: (<${CIRCLE_BUILD_URL}|view job>)"
-                  }
-                }
-              ]
-            }
 jobs:
   build:
     docker:
-      - image: alpine:3.7
+      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
     steps:
       - checkout
-      - run: dotnet test /TaskManager.Tests
-      - notify-fail
-
+      - run:
+          name: Restore packages
+          command:
+            dotnet restore
+      - run:
+          name: Tests
+          command: dotnet test /TaskManager.Tests
