@@ -1,12 +1,30 @@
 version: 2.1
+orbs:
+  slack: circleci/slack@4.4.2
+commands:
+  notify-fail:
+    description: Notify slack of a failure
+    steps:
+      - slack/notify:
+          event: fail
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "`${CIRCLE_JOB}` Failed, `$CIRCLE_BRANCH` branch :red_circle: (<${CIRCLE_BUILD_URL}|view job>)"
+                  }
+                }
+              ]
+            }
 jobs:
   build:
     docker:
       - image: alpine:3.7
     steps:
-      - run:
-          name: The First Step
-          command: |
-            echo 'Hello World!'
-            echo 'This is the delivery pipeline'
+      - checkout
+      - run: dotnet test /TaskManager.Tests
+      - notify-fail
 
