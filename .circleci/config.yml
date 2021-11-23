@@ -2,10 +2,19 @@ version: 2
 jobs:
   build:
     docker:
-      - image: microsoft/aspnetcore-build:2.0
+      - image: mcr.microsoft.com/dotnet/core/skd:2.2
     steps:
       - checkout
-      - run: find .
-      - run: dotnet restore
-      - run: dotnet build
-      - run: dotnet test --no-build
+      - run:
+          name: Restore packages
+          command:
+            dotnet restore
+      - run:
+          name: Test App
+          command:
+            dotnet test
+      - run:
+          name: Build App
+          command:
+            dotnet build
+
