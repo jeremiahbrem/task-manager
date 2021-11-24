@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: mcr.microsoft.com/dotnet/core/runtime:2.2
+      - image: mcr.microsoft.com/dotnet/sdk:5.0
     steps:
       - checkout
       - run:
@@ -10,11 +10,12 @@ jobs:
           command:
             dotnet restore
       - run:
-          name: Test App
-          command:
-            dotnet test
-      - run:
           name: Build App
           command:
             dotnet build
+      - run:
+          name: Test App
+          command:
+            dotnet test
+
 
