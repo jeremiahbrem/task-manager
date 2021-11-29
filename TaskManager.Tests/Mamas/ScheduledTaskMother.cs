@@ -10,13 +10,15 @@ namespace TaskManager.Tests.Mamas
         private readonly Task _task;
         private readonly User _user;
         private readonly ScheduledTask _preceding;
+        private readonly string _id;
         public ScheduledTask ScheduledTask => CreateScheduledTask();
 
-        public ScheduledTaskMother(Task task, User user, ScheduledTask preceding = null)
+        public ScheduledTaskMother(Task task, User user, ScheduledTask preceding = null, string id = null)
         {
             _task = task;
             _user = user;
             _preceding = preceding;
+            _id = id ?? Guid.NewGuid().ToString();
         }
 
         private ScheduledTask CreateScheduledTask()
@@ -26,7 +28,7 @@ namespace TaskManager.Tests.Mamas
                 Task = _task,
                 User = _user,
                 PrecedingTask = _preceding,
-                ScheduledTaskId = Guid.NewGuid().ToString()
+                ScheduledTaskId = _id
             };
         }
     }

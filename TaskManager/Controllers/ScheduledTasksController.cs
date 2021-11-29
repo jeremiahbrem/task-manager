@@ -79,5 +79,18 @@ namespace TaskManager.Controllers
 
             return new ValidationResult($"ScheduledTask {createdScheduledTask.ScheduledTaskId} created.");
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetTask(string id)
+        {
+            var existingScheduledTask = await _repo.GetScheduledTask(id);
+
+            if (existingScheduledTask == null)
+            {
+                return NotFound();
+            }
+
+            return new JsonResult(existingScheduledTask.ToQueryObject());
+        }
     }
 }

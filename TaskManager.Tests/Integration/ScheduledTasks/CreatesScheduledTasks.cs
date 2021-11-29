@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -16,16 +17,14 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
 
             var task  = await CreateTask("Test Task", "Category One", context);
             var user = await CreateUser("Jane", "Doe", "jane.doe@example.com", context);
-            await CreateScheduledTask(task, user, context);
-
-            var precedingScheduledTask = await context.ScheduledTasks.FirstOrDefaultAsync();
+            var id = Guid.NewGuid().ToString();
+            var precedingScheduledTask = await CreateScheduledTask(task, user, context, null, id);
 
             var newTask  = await CreateTask("Test Task Two", "Category One", context);
-
             var scheduledTask = new
             {
                 Task = newTask.Name,
-                PrecedingId = precedingScheduledTask.ScheduledTaskId,
+                PrecedingId = id,
                 Email = user.Email
             };
 
