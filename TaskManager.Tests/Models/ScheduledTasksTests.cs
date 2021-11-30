@@ -56,21 +56,25 @@ namespace TaskManager.Tests.Models
         public void ToQueryObjectTest()
         {
             var preceding = CreatePreceding();
+            var id = Guid.NewGuid().ToString();
 
             var scheduledTask = new ScheduledTask
             {
                 Task = _task,
                 User = _user,
-                PrecedingTask = preceding
+                PrecedingTask = preceding,
+                ScheduledTaskId = id
             };
 
             var result = scheduledTask.ToQueryObject();
 
             result.Should().BeEquivalentTo(new
             {
+                Id =  scheduledTask.ScheduledTaskId,
                 User = _user.ToQueryObject(),
                 Task = _task.ToQueryObject(),
-                Preceding = preceding.ToQueryObject(),
+                Preceding = preceding.Task.Name,
+                PrecedingId = preceding.ScheduledTaskId
             });
         }
 

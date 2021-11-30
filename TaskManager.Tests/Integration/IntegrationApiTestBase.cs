@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaskManager.Common.Validation;
@@ -83,9 +84,11 @@ namespace TaskManager.Tests.Integration
             Task task,
             User user,
             TaskManagerContext context,
-            ScheduledTask preceding = null)
+            ScheduledTask preceding = null,
+            string id = null)
         {
-            var scheduledTask = new ScheduledTaskMother(task, user, preceding).ScheduledTask;
+            var createdTask = await CreateTask(task.Name, task.Category.Name, context);
+            var scheduledTask = new ScheduledTaskMother(createdTask, user, preceding, id).ScheduledTask;
             context.ScheduledTasks.Add(scheduledTask);
             await context.SaveChangesAsync();
             return scheduledTask;

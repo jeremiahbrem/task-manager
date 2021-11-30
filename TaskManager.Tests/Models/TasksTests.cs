@@ -49,7 +49,7 @@ namespace TaskManager.Tests.Models
             result.Should().BeEquivalentTo(new
             {
                 Name = "Change oil",
-                Category = category.ToQueryObject(),
+                Category = category.Name,
             });
         }
     }

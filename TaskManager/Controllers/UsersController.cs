@@ -66,12 +66,7 @@ namespace TaskManager.Controllers
                 return NotFound();
             }
 
-            return new JsonResult(new
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-            });
+            return new JsonResult(user.ToQueryObject());
         }
     }
 }

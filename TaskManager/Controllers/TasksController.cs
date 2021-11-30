@@ -51,7 +51,7 @@ namespace TaskManager.Controllers
 
             await _repo.AddTask(createdTask);
 
-            return new ValidationResult($"Task {task} created.");
+            return new ValidationResult($"Task {task.Name} created.");
         }
 
         [HttpGet]
@@ -78,11 +78,7 @@ namespace TaskManager.Controllers
                 return NotFound();
             }
 
-            return new JsonResult(new
-            {
-                Name = task.Name,
-                Category = task.Category.Name
-            });
+            return new JsonResult(task.ToQueryObject());
         }
     }
 }

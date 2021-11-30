@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -17,10 +18,11 @@ namespace TaskManager.Models.Domain.ScheduledTask
         public async Task<ScheduledTask?> GetScheduledTask(string id)
         {
             var existingTask = await _context.ScheduledTasks
-
                 .Include(x => x.Task)
+                .ThenInclude(x => x.Category)
                 .Include(x => x.User)
-                .Include(x => x.PrecedingTask)
+                .Include(x => x.PrecedingTask!)
+                .ThenInclude(x => x.Task)
                 .FirstOrDefaultAsync(x => x.ScheduledTaskId == id);
 
             return existingTask;
@@ -31,8 +33,10 @@ namespace TaskManager.Models.Domain.ScheduledTask
             var result = await _context.Set<ScheduledTask>()
                 .AsNoTracking()
                 .Include(x => x.Task)
+                .ThenInclude(x => x.Category)
                 .Include(x => x.User)
-                .Include(x => x.PrecedingTask)
+                .Include(x => x.PrecedingTask!)
+                .ThenInclude(x => x.Task)
                 .ToListAsync();
 
             return result;

@@ -1,3 +1,4 @@
+using System;
 using TaskManager.Models.Domain.Categories;
 
 namespace TaskManager.Models.Domain.Task
@@ -15,7 +16,7 @@ namespace TaskManager.Models.Domain.Task
             return new Query.Task
             {
                 Name = Name,
-                Category = Category.ToQueryObject()
+                Category = Category.Name
             };
         }
     }

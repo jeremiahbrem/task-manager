@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
@@ -15,7 +16,6 @@ namespace TaskManager.Tests.Integration.Categories
             await CreateCategory("CategoryTwo", context);
 
             var response = await SendGetRequest("/api/categories");
-
             var result = await GetJArray(response);
 
             var expected = new JArray("CategoryOne", "CategoryTwo");
