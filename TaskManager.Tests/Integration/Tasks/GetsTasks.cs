@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace TaskManager.Tests.Integration.Tasks
@@ -15,18 +14,20 @@ namespace TaskManager.Tests.Integration.Tasks
             await CreateTask("TaskOne", "CategoryOne", context);
             await CreateTask("TaskTwo", "CategoryTwo", context);
             var response = await SendGetRequest("/api/tasks");
-            var result = await GetJArray(response);
+            var result = await GetJsonObjectArray<TaskResponse>(response);
 
-            var expected = new List<JObject>
+            var expected = new List<TaskResponse>
             {
-                new (
-                    new JProperty("name", "TaskOne"),
-                    new JProperty("category", "CategoryOne")
-                ),
-                new (
-                    new JProperty("name", "TaskTwo"),
-                    new JProperty("category", "CategoryTwo")
-                ),
+                new TaskResponse
+                {
+                    Name = "TaskOne",
+                    Category = "CategoryOne"
+                },
+                new TaskResponse
+                {
+                    Name = "TaskTwo",
+                    Category = "CategoryTwo"
+                },
             };
 
             result.Should().BeEquivalentTo(expected);

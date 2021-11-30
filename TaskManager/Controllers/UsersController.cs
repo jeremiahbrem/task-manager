@@ -45,13 +45,7 @@ namespace TaskManager.Controllers
         {
             var result = await _repo.GetUsers();
 
-            var users = result.Select(x => new
-            {
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                Email = x.Email,
-
-            }).ToArray();
+            var users = result.Select(x => x.ToQueryObject()).ToArray();
 
             return new JsonResult(users);
         }

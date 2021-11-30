@@ -92,5 +92,15 @@ namespace TaskManager.Controllers
 
             return new JsonResult(existingScheduledTask.ToQueryObject());
         }
+
+        [HttpGet]
+        public async Task<ActionResult> GetScheduledTasks()
+        {
+            var result = await _repo.GetScheduledTasks();
+
+            var tasks = result.Select(x => x.ToQueryObject()).ToArray();
+
+            return new JsonResult(tasks);
+        }
     }
 }

@@ -1,14 +1,15 @@
 using System;
+using System.Net;
 using Task = System.Threading.Tasks;
 using FluentAssertions;
 using Xunit;
 
 namespace TaskManager.Tests.Integration.ScheduledTasks
 {
-    public class GetScheduledTask : IntegrationApiTestBase
+    public class GetsScheduledTask : IntegrationApiTestBase
     {
         [Fact]
-        public async Task.Task GetsScheduledTask()
+        public async Task.Task GetsScheduledTaskTest()
         {
             var context = Server.CreateDbContext();
             var user = await CreateUser("Jane", "Doe", "jane.doe@example.com", context);
@@ -33,6 +34,13 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             };
 
             result.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public async Task.Task ReturnsNotFound()
+        {
+            var response = await SendGetRequest("/api/scheduled-tasks/unknownTask");
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }

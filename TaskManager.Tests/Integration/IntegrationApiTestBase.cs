@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TaskManager.Common.Validation;
@@ -61,6 +60,13 @@ namespace TaskManager.Tests.Integration
             var json = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<JArray>(json);
             return result;
+        }
+
+        protected static async Task<IEnumerable<T>> GetJsonObjectArray<T>(HttpResponseMessage response) where T : class
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<JArray>(json);
+            return result.Select(x => JsonConvert.DeserializeObject<T>(x.ToString()));
         }
 
         protected static async Task<User> CreateUser(string firstName, string lastName, string email, TaskManagerContext context)

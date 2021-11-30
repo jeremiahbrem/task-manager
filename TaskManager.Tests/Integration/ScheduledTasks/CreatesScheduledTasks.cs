@@ -110,6 +110,27 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             await AssertResponse(expected, scheduledTask);
         }
 
+        [Fact]
+        public async Task SendsInvalidModelError()
+        {
+            var context = Server.CreateDbContext();
+
+            var task  = await CreateTask("Test Task", "Category One", context);
+
+            var scheduledTask = new
+            {
+                Task = task.Name,
+                PrecedingId = "abc123"
+            };
+
+            var expected = CreateExpectedResponse(
+                "Validation failed",
+                "The Email field is required."
+            );
+
+            await AssertResponse(expected, scheduledTask);
+        }
+
         private async Task AssertResponse(ValidationResponse expected, object scheduledTask)
         {
             var content = CreateContent(scheduledTask);

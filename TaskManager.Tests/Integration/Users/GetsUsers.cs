@@ -15,20 +15,22 @@ namespace TaskManager.Tests.Integration.Users
             await CreateUser("John", "Doe", "john.doe@example.com", context);
             await CreateUser("Jane", "Doe", "jane.doe@example.com", context);
             var response = await SendGetRequest("/api/users");
-            var result = await GetJArray(response);
+            var result = await GetJsonObjectArray<UserResponse>(response);
 
-            var expected = new List<JObject>
+            var expected = new List<UserResponse>
             {
-                new (
-                    new JProperty("firstName", "John"),
-                    new JProperty("lastName", "Doe"),
-                    new JProperty("email", "john.doe@example.com")
-                ),
-                new (
-                    new JProperty("firstName", "Jane"),
-                    new JProperty("lastName", "Doe"),
-                    new JProperty("email", "jane.doe@example.com")
-                ),
+                new UserResponse
+                {
+                    FirstName = "John",
+                    LastName = "Doe",
+                    Email = "john.doe@example.com"
+                },
+                new UserResponse
+                {
+                    FirstName = "Jane",
+                    LastName = "Doe",
+                    Email = "jane.doe@example.com"
+                },
             };
 
             result.Should().BeEquivalentTo(expected);

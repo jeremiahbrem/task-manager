@@ -17,3 +17,5 @@ After cloaning the project, create an appsettings.Development.json in the TaskMa
   }
 }
 ```
+
+Make sure `postgresql` is installed on your local machine.
