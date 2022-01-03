@@ -29,6 +29,7 @@ namespace TaskManager.Controllers
             {
                 return new ValidationResult(
                     "Duplicate email error",
+                    400,
                     new List<ValidationError> { new ($"A user with email {user.Email} already exists.") }
                 );
             }
@@ -37,7 +38,7 @@ namespace TaskManager.Controllers
 
             await _repo.AddUser(createdUser);
 
-            return new ValidationResult($"User {user.FirstName} {user.LastName} created.");
+            return new ValidationResult($"User {user.FirstName} {user.LastName} created.", 200);
         }
 
         [HttpGet]
@@ -51,13 +52,17 @@ namespace TaskManager.Controllers
         }
 
         [HttpGet("{email}")]
-        public async Task<ActionResult> GetTask(string email)
+        public async Task<ActionResult> GetUser(string email)
         {
             var user = await _repo.GetUser(email);
 
             if (user == null)
             {
-                return NotFound();
+                return new ValidationResult(
+                    "Invalid email",
+                    404,
+                    new List<ValidationError> { new ($"A user with email {email} does not exist.") }
+                );
             }
 
             return new JsonResult(user.ToQueryObject());

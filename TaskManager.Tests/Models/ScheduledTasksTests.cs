@@ -1,5 +1,6 @@
 using System;
 using FluentAssertions;
+using TaskManager.Common.Validation;
 using TaskManager.Models.Domain.Categories;
 using TaskManager.Models.Domain.ScheduledTask;
 using TaskManager.Models.Domain.Task;
@@ -34,7 +35,6 @@ namespace TaskManager.Tests.Models
             var request = new ScheduledTaskCreate
             {
                 Task = "Change oil",
-                Email = "john.doe@example.com",
                 PrecedingId = _precedingId,
             };
 
@@ -48,6 +48,7 @@ namespace TaskManager.Tests.Models
                 Task = _task,
                 PrecedingTaskId = preceding.Id,
                 ScheduledTaskId = _scheduledTaskId,
+                Completed = false
             });
         }
 
@@ -63,7 +64,8 @@ namespace TaskManager.Tests.Models
                 Task = _task,
                 User = _user,
                 PrecedingTask = preceding,
-                ScheduledTaskId = id
+                ScheduledTaskId = id,
+                Completed = false
             };
 
             var result = scheduledTask.ToQueryObject();
@@ -74,18 +76,63 @@ namespace TaskManager.Tests.Models
                 User = _user.ToQueryObject(),
                 Task = _task.ToQueryObject(),
                 Preceding = preceding.Task.Name,
-                PrecedingId = preceding.ScheduledTaskId
+                PrecedingId = preceding.ScheduledTaskId,
+                Completed = false
             });
         }
 
-        private ScheduledTask CreatePreceding()
+        [Fact]
+        public void ThrowsIfPrecedingNotCompletedFirst()
+        {
+            var preceding = CreatePreceding();
+            var id = Guid.NewGuid().ToString();
+
+            var scheduledTask = new ScheduledTask
+            {
+                Task = _task,
+                User = _user,
+                PrecedingTask = preceding,
+                ScheduledTaskId = id,
+                Completed = false
+            };
+
+            var func = new Action(() => scheduledTask.Complete());
+            func.Should().Throw<ValidationException>()
+                .And.Errors.Should().BeEquivalentTo(new object[]
+                {
+                    new { Message = "You must complete the preceding task first" }
+                });
+        }
+
+        [Fact]
+        public void MarksCompleted()
+        {
+            var preceding = CreatePreceding(true);
+            var id = Guid.NewGuid().ToString();
+
+            var scheduledTask = new ScheduledTask
+            {
+                Task = _task,
+                User = _user,
+                PrecedingTask = preceding,
+                ScheduledTaskId = id,
+                Completed = false
+            };
+
+            scheduledTask.Complete();
+
+            Assert.True(scheduledTask.Completed);
+        }
+
+        private ScheduledTask CreatePreceding(bool completed = false)
         {
             return new ScheduledTask
             {
                 User = _user,
                 Task = new Task {Name = "Rotate tires", Category = _category},
                 ScheduledTaskId = _precedingId,
-                Id = 1234
+                Id = 1234,
+                Completed = completed
             };
         }
     }

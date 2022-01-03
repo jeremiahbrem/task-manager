@@ -9,8 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TaskManager.Auth;
+using TaskManager.Common;
 using TaskManager.Database;
 using TaskManager.Models;
+using TaskManager.Models.Domain.ScheduledTask;
 
 namespace TaskManager
 {
@@ -29,6 +32,9 @@ namespace TaskManager
 
             services.AddDbContext<TaskManagerContext>(
                 options => options.UseNpgsql(Configuration.GetConnectionString("TaskManagerContext")));
+            services.AddHttpContextAccessor();
+            services.AddScoped(ctx => new CurrentUser(
+                ctx.GetRequiredService<IHttpContextAccessor>().HttpContext!.Request.Headers["email"]));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -39,6 +45,9 @@ namespace TaskManager
             }
 
             app.UseRouting();
+
+            app.UseAuthorization();
+            app.UseMiddleware<ScheduledTaskMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

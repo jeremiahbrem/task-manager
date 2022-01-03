@@ -7,7 +7,6 @@ using TaskManager.Common.Validation.ValidationModel;
 using TaskManager.Database;
 using TaskManager.Models.Domain.Categories;
 using TaskManager.Models.Domain.Task;
-using Task = System.Threading.Tasks.Task;
 
 namespace TaskManager.Controllers
 {
@@ -33,6 +32,7 @@ namespace TaskManager.Controllers
             {
                 return new ValidationResult(
                     "Invalid category",
+                    400,
                     new List<ValidationError> { new ($"Invalid category {task.Category}. You must use an existing category.") }
                 );
             }
@@ -43,6 +43,7 @@ namespace TaskManager.Controllers
             {
                 return new ValidationResult(
                     "Duplicate task error",
+                    400,
                     new List<ValidationError> { new ($"A task with name {task.Name} already exists.") }
                 );
             }
@@ -51,7 +52,7 @@ namespace TaskManager.Controllers
 
             await _repo.AddTask(createdTask);
 
-            return new ValidationResult($"Task {task.Name} created.");
+            return new ValidationResult($"Task {task.Name} created.", 200);
         }
 
         [HttpGet]
@@ -59,11 +60,6 @@ namespace TaskManager.Controllers
         {
             var result = await _repo.GetTasks();
 
-            // var tasks = result.Select(x => new
-            // {
-            //     Name = x.Name,
-            //     Category = x.Category.Name
-            // }).ToArray();
             var tasks = result.Select(x => x.ToQueryObject()).ToArray();
 
             return new JsonResult(tasks);
@@ -76,7 +72,11 @@ namespace TaskManager.Controllers
 
             if (task == null)
             {
-                return NotFound();
+                return new ValidationResult(
+                    "Invalid id",
+                    404,
+                    new List<ValidationError> { new ($"A task with name {name} does not exist.") }
+                );
             }
 
             return new JsonResult(task.ToQueryObject());

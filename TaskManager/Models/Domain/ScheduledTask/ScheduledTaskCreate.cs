@@ -5,8 +5,6 @@ namespace TaskManager.Models.Domain.ScheduledTask
     public class ScheduledTaskCreate
     {
         [Required]
-        public string Email { get; set; } = "";
-        [Required]
         public string Task { get; set; } = "";
         public string? PrecedingId { get; set; }
 
@@ -22,6 +20,7 @@ namespace TaskManager.Models.Domain.ScheduledTask
                 User = user,
                 PrecedingTaskId = precedingId,
                 ScheduledTaskId = id,
+                Completed = false
             };
         }
     }

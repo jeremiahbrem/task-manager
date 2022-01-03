@@ -2,11 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using TaskManager.Common.Validation;
 using TaskManager.Common.Validation.ValidationModel;
 using TaskManager.Database;
-using TaskManager.Models;
 using TaskManager.Models.Domain.Categories;
 
 namespace TaskManager.Controllers
@@ -31,13 +29,14 @@ namespace TaskManager.Controllers
             {
                 return new ValidationResult(
                     "Duplicate category error",
+                    400,
                     new List<ValidationError> { new ($"A category with name {category.Name} already exists.") }
                 );
             }
 
             await _repo.AddCategory(category);
 
-            return new ValidationResult($"Category {category.Name} created.");
+            return new ValidationResult($"Category {category.Name} created.", 200);
         }
 
         [HttpGet]

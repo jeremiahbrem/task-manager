@@ -6,14 +6,18 @@ namespace TaskManager.Common.Validation
 {
     public class ValidationResult : ObjectResult
     {
-        public ValidationResult(string message, IEnumerable<ValidationError>? errors = null)
+        public ValidationResult(
+            string message,
+            int statusCode,
+            IEnumerable<ValidationError>? errors = null
+        )
             : base(new ValidationResponse
             {
                 Message = message,
                 Errors = errors,
             })
         {
-            StatusCode = (errors == null) ? StatusCodes.Status200OK : StatusCodes.Status400BadRequest;
+            StatusCode = statusCode;
         }
     }
 }

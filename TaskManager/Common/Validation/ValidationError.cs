@@ -8,5 +8,10 @@ namespace TaskManager.Common.Validation
         {
             Message = message;
         }
+
+        public ValidationException ToException()
+        {
+            return new ValidationException(this);
+        }
     }
 }

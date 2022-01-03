@@ -22,7 +22,7 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             var id = Guid.NewGuid().ToString();
             await CreateScheduledTask(task, user, context, precedingScheduledTask, id);
 
-            var response = await SendGetRequest($"/api/scheduled-tasks");
+            var response = await SendGetRequest($"/api/scheduled-tasks", user.Email);
             var result = await GetJsonObjectArray<ScheduledTaskResponse>(response);
 
             var expected = new List<ScheduledTaskResponse>
@@ -34,6 +34,7 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
                     Preceding = precedingScheduledTask.Task.Name,
                     PrecedingId = precedingScheduledTask.ScheduledTaskId,
                     Id = id,
+                    Completed = false
                 },
                 new ScheduledTaskResponse
                 {
@@ -42,10 +43,23 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
                     Preceding = null,
                     PrecedingId = null,
                     Id = precedingId,
+                    Completed = false
                 },
             };
 
             result.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public async Task.Task ReturnsEmptyResults()
+        {
+            var context = Server.CreateDbContext();
+            var user = await CreateUser("Jane", "Doe", "jane.doe@example.com", context);
+
+            var response = await SendGetRequest($"/api/scheduled-tasks", user.Email);
+            var result = await GetJsonObjectArray<ScheduledTaskResponse>(response);
+
+            result.Should().BeEmpty();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using TaskManager.Common.Validation;
 
 namespace TaskManager.Models.Domain.ScheduledTask
 {
@@ -12,6 +13,7 @@ namespace TaskManager.Models.Domain.ScheduledTask
         public Task.Task Task { get; set; } = null!;
         public ScheduledTask? PrecedingTask { get; set; }
         public User.User User { get; set; } = null!;
+        public bool Completed { get; set; }
 
         public Query.ScheduledTask ToQueryObject()
         {
@@ -21,8 +23,19 @@ namespace TaskManager.Models.Domain.ScheduledTask
                 Task = Task.ToQueryObject(),
                 User = User.ToQueryObject(),
                 Preceding = PrecedingTask?.Task.Name,
-                PrecedingId = PrecedingTask?.ScheduledTaskId
+                PrecedingId = PrecedingTask?.ScheduledTaskId,
+                Completed = Completed
             };
+        }
+
+        public void Complete()
+        {
+            if (PrecedingTask != null && !PrecedingTask.Completed)
+            {
+                throw new ValidationError("You must complete the preceding task first").ToException();
+            }
+
+            Completed = true;
         }
     }
 }

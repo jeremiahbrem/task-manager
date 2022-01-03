@@ -8,16 +8,9 @@ namespace TaskManager.Tests.Validation
     public class ValidationResultTests
     {
         [Fact]
-        public void TestValidationError()
-        {
-            var error = new ValidationError("There was an error");
-            Assert.Equal("There was an error", error.Message);
-        }
-
-        [Fact]
         public void TestValidationResultError()
         {
-            var result = new ValidationResult("Error", new List<ValidationError>{ new ("There was an error") });
+            var result = new ValidationResult("Error", 400, new List<ValidationError>{ new ("There was an error") });
 
             result.Value.Should().BeEquivalentTo(new ValidationResponse
             {
@@ -31,7 +24,7 @@ namespace TaskManager.Tests.Validation
         [Fact]
         public void TestValidationResultSuccess()
         {
-            var result = new ValidationResult("Task created");
+            var result = new ValidationResult("Task created", 200);
 
             result.Value.Should().BeEquivalentTo(new ValidationResponse
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -25,12 +26,11 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             {
                 Task = newTask.Name,
                 PrecedingId = id,
-                Email = user.Email
             };
 
             var content = CreateContent(scheduledTask);
 
-            var response = await SendPostRequest("/api/scheduled-tasks/create", content);
+            var response = await SendPostRequest("/api/scheduled-tasks/create", content, user.Email);
 
             var createdScheduledTask = await context.ScheduledTasks.FirstOrDefaultAsync(x => x.Task.Name == newTask.Name);
             var createdTask = await context.Tasks.FirstOrDefaultAsync(x => x.Name == newTask.Name);
@@ -41,7 +41,8 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             {
                 Task = createdTask,
                 User = createdUser,
-                PrecedingTask = precedingScheduledTask
+                PrecedingTask = precedingScheduledTask,
+                Completed = false
             });
         }
 
@@ -55,7 +56,6 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             var scheduledTask = new
             {
                 Task = "unknownTask",
-                Email = user.Email
             };
 
             var expected = CreateExpectedResponse(
@@ -63,7 +63,9 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
                 "Invalid task unknownTask. You must use an existing task."
             );
 
-            await AssertResponse(expected, scheduledTask);
+            var (response, result) = await GetResponse(scheduledTask, user.Email);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            result.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -72,19 +74,21 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             var context = Server.CreateDbContext();
 
             var task  = await CreateTask("Test Task", "Category One", context);
+            var uknownEmail = "unknown@example.com";
 
             var scheduledTask = new
             {
                 Task = task.Name,
-                Email = "unknown@example.com"
             };
 
             var expected = CreateExpectedResponse(
-                "Invalid user",
-                "A user with email unknown@example.com does not exist."
+                "Unauthorized",
+                "A user with email unknown@example.com does not exist"
             );
 
-            await AssertResponse(expected, scheduledTask);
+            var (response, result) = await GetResponse(scheduledTask, uknownEmail);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            result.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -98,7 +102,6 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             var scheduledTask = new
             {
                 Task = task.Name,
-                Email = user.Email,
                 PrecedingId = "abc123"
             };
 
@@ -107,39 +110,40 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
                 "A scheduled task with id abc123 does not exist."
             );
 
-            await AssertResponse(expected, scheduledTask);
+            var (response, result) = await GetResponse(scheduledTask, user.Email);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            result.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
         public async Task SendsInvalidModelError()
         {
             var context = Server.CreateDbContext();
-
-            var task  = await CreateTask("Test Task", "Category One", context);
+            var user = await CreateUser("Jane", "Doe", "jane.doe@example.com", context);
+            await CreateTask("Test Task", "Category One", context);
 
             var scheduledTask = new
             {
-                Task = task.Name,
                 PrecedingId = "abc123"
             };
 
             var expected = CreateExpectedResponse(
                 "Validation failed",
-                "The Email field is required."
+                "The Task field is required."
             );
 
-            await AssertResponse(expected, scheduledTask);
+            var (response, result) = await GetResponse(scheduledTask, user.Email);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            result.Should().BeEquivalentTo(expected);
         }
 
-        private async Task AssertResponse(ValidationResponse expected, object scheduledTask)
+        private async Task<(HttpResponseMessage, ValidationResponse)> GetResponse(object scheduledTask, string email = null)
         {
             var content = CreateContent(scheduledTask);
 
-            var response = await SendPostRequest("/api/scheduled-tasks/create", content);
+            var response = await SendPostRequest("/api/scheduled-tasks/create", content, email);
             var result = await GetJsonObject<ValidationResponse>(response);
-
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            result.Should().BeEquivalentTo(expected);
+            return (response, result);
         }
     }
 }

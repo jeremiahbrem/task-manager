@@ -25,25 +25,33 @@ namespace TaskManager.Tests.Integration
             byteContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             return byteContent;
         }
-        protected static ValidationResponse CreateExpectedResponse(string message, string error)
+        protected static ValidationResponse CreateExpectedResponse(string message, string error = null)
         {
             return new ValidationResponse
             {
                 Message = message,
-                Errors = new List<ValidationError> { new(error) }
+                Errors = error != null ? new List<ValidationError> { new(error) } : null
             };
         }
 
-        protected async Task<HttpResponseMessage> SendPostRequest(string path, ByteArrayContent content)
+        protected async Task<HttpResponseMessage> SendPostRequest(string path, ByteArrayContent content, string email = null)
         {
             var client = Server.CreateClient();
+            if (email != null)
+            {
+                client.DefaultRequestHeaders.Add("email", email);
+            }
             var response = await client.PostAsync(path, content);
             return response;
         }
 
-        protected async Task<HttpResponseMessage> SendGetRequest(string path)
+        protected async Task<HttpResponseMessage> SendGetRequest(string path, string email = null)
         {
             var client = Server.CreateClient();
+            if (email != null)
+            {
+                client.DefaultRequestHeaders.Add("email", email);
+            }
             var response = await client.GetAsync(path);
             return response;
         }

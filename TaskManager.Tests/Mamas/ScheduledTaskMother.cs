@@ -28,7 +28,8 @@ namespace TaskManager.Tests.Mamas
                 Task = _task,
                 User = _user,
                 PrecedingTask = _preceding,
-                ScheduledTaskId = _id
+                ScheduledTaskId = _id,
+                Completed = false
             };
         }
     }
