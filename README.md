@@ -64,6 +64,7 @@ Example request:
 **GET** Task: `/api/tasks/{name}`    
 
 **GET** Tasks: `/api/tasks`   
+**GET** Tasks by category: `/api/tasks?category=CATEGORY`
 
 \*\***All `scheduled-task` routes require an `email` header value in the request.**\*\*
 
@@ -92,7 +93,8 @@ Example request:
 http://localhost:5000/api/scheduled-tasks/7746615b-6359-45fa-900c-3053f494b8db`
 ```
 
-**GET** Scheduled tasks: `/api/scheduled-tasks`    
+**GET** Scheduled tasks: `/api/scheduled-tasks`   
+**GET** Scheduled tasks by category: `/api/scheduled-tasks?category=CATEGORY` 
 
 **POST** Complete scheduled task: `/api/scheduled-tasks/complete`    
 Example request:

@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Database;
@@ -27,6 +29,18 @@ namespace TaskManager.Models.Domain.Task
         {
             var result = await _context.Set<Task>()
                 .AsNoTracking()
+                .Include(x => x.Category)
+                .ToListAsync();
+
+            return result;
+        }
+
+        public async Task<List<Task>> GetTasks(string category)
+        {
+            Console.WriteLine(category);
+            var result = await _context.Set<Task>()
+                .AsNoTracking()
+                .Where(x => x.Category.Name.ToLower() == category.ToLower())
                 .Include(x => x.Category)
                 .ToListAsync();
 

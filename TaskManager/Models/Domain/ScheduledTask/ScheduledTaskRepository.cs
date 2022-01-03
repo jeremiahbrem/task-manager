@@ -57,6 +57,22 @@ namespace TaskManager.Models.Domain.ScheduledTask
             return result;
         }
 
+        public async Task<List<ScheduledTask>> GetScheduledTasks(string category)
+        {
+            var result = await _context.Set<ScheduledTask>()
+                .AsNoTracking()
+                .Where(x => x.User.Email == _user.Email
+                    &&  x.Task.Category.Name.ToLower() == category.ToLower())
+                .Include(x => x.Task)
+                .ThenInclude(x => x.Category)
+                .Include(x => x.User)
+                .Include(x => x.PrecedingTask!)
+                .ThenInclude(x => x.Task)
+                .ToListAsync();
+
+            return result;
+        }
+
         public async System.Threading.Tasks.Task AddScheduledTask(ScheduledTask scheduledTask)
         {
             _context.ScheduledTasks.Add(scheduledTask);

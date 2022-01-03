@@ -1,12 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Common.Validation;
 using TaskManager.Common.Validation.ValidationModel;
 using TaskManager.Database;
 using TaskManager.Models.Domain.Categories;
 using TaskManager.Models.Domain.Task;
+using Task = TaskManager.Models.Domain.Task.Task;
 
 namespace TaskManager.Controllers
 {
@@ -58,7 +61,17 @@ namespace TaskManager.Controllers
         [HttpGet]
         public async Task<ActionResult> GetTasks()
         {
-            var result = await _repo.GetTasks();
+            var filteredCategory = HttpContext.Request.Query["category"];
+            List<Task> result;
+
+            if (!string.IsNullOrEmpty(filteredCategory))
+            {
+                result = await _repo.GetTasks(filteredCategory);
+            }
+            else
+            {
+                result = await _repo.GetTasks();
+            }
 
             var tasks = result.Select(x => x.ToQueryObject()).ToArray();
 

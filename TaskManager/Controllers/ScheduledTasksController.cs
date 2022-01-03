@@ -110,7 +110,17 @@ namespace TaskManager.Controllers
         [HttpGet]
         public async Task<ActionResult> GetScheduledTasks()
         {
-            var result = await _repo.GetScheduledTasks();
+            var filteredCategory = HttpContext.Request.Query["category"];
+            List<ScheduledTask> result;
+
+            if (!string.IsNullOrEmpty(filteredCategory))
+            {
+                result = await _repo.GetScheduledTasks(filteredCategory);
+            }
+            else
+            {
+                result = await _repo.GetScheduledTasks();
+            }
             var tasks = result.Select(x => x.ToQueryObject()).ToArray();
 
             return new JsonResult(tasks);
