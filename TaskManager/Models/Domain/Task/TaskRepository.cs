@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,7 +36,6 @@ namespace TaskManager.Models.Domain.Task
 
         public async Task<List<Task>> GetTasks(string category)
         {
-            Console.WriteLine(category);
             var result = await _context.Set<Task>()
                 .AsNoTracking()
                 .Where(x => x.Category.Name.ToLower() == category.ToLower())

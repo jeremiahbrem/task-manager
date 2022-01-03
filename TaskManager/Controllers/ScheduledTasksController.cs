@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using TaskManager.Auth;
 using TaskManager.Common.Validation;
 using TaskManager.Common.Validation.ValidationModel;
@@ -97,11 +96,7 @@ namespace TaskManager.Controllers
 
             if (validUser != _user.Email)
             {
-                return new ValidationResult(
-                    "Unauthorized",
-                    401,
-                    new List<ValidationError> { new ("You are not authorized to access this scheduled task.") }
-                );
+                return ReturnUnauthorized();
             }
 
             return new JsonResult(existingScheduledTask.ToQueryObject());
@@ -146,11 +141,7 @@ namespace TaskManager.Controllers
 
             if (validUser != _user.Email)
             {
-                return new ValidationResult(
-                    "Unauthorized",
-                    401,
-                    new List<ValidationError> { new ("You are not authorized to access this scheduled task.") }
-                );
+                return ReturnUnauthorized();
             }
 
             try
@@ -165,6 +156,15 @@ namespace TaskManager.Controllers
             await _repo.UpdateScheduledTask(existingScheduledTask);
 
             return new ValidationResult($"Scheduled task {id} completed.", 200);
+        }
+
+        private ValidationResult ReturnUnauthorized()
+        {
+            return new ValidationResult(
+                "Unauthorized",
+                401,
+                new List<ValidationError> { new ("You are not authorized to access this scheduled task.") }
+            );
         }
     }
 }
