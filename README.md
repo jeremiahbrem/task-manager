@@ -96,10 +96,8 @@ http://localhost:5000/api/scheduled-tasks/7746615b-6359-45fa-900c-3053f494b8db`
 **GET** Scheduled tasks: `/api/scheduled-tasks`   
 **GET** Scheduled tasks by category: `/api/scheduled-tasks?category=CATEGORY` 
 
-**POST** Complete scheduled task: `/api/scheduled-tasks/complete`    
+**POST** Complete scheduled task: `/api/scheduled-tasks/complete/{id}`    
 Example request:
 ```
-{
-  "id": "7746615b-6359-45fa-900c-3053f494b8db"
-}
+http://localhost:5000/api/scheduled-tasks/complete/7746615b-6359-45fa-900c-3053f494b8db
 ```
