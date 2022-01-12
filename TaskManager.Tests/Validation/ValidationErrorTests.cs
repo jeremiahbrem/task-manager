@@ -19,11 +19,12 @@ namespace TaskManager.Tests.Validation
         public void TestToException()
         {
             var error = new ValidationError("There was an error");
-            var func = new Action(() => throw error.ToException());
+            var func = new Action(() => throw error.ToException("Exception message"));
             func.Should().Throw<ValidationException>()
-                .And.Errors.Should().BeEquivalentTo(new object[]
+                .And.Should().BeEquivalentTo(new
                 {
-                    new { Message = "There was an error" }
+                    Message = "Exception message",
+                    Errors = new object[] { new { Message = "There was an error" } },
                 });
         }
     }

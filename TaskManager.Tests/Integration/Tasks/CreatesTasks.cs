@@ -49,8 +49,8 @@ namespace TaskManager.Tests.Integration.Tasks
             var result = await GetJsonObject<ValidationResponse>(response);
 
             var expected = CreateExpectedResponse(
-                "Duplicate task error",
-                "A task with name TaskOne already exists."
+                "Invalid task name",
+                "A task with name TaskOne already exists"
             );
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -72,8 +72,8 @@ namespace TaskManager.Tests.Integration.Tasks
             var result = await GetJsonObject<ValidationResponse>(response);
 
             var expected = CreateExpectedResponse(
-                "Invalid category",
-                "Invalid category NonExistentCategory. You must use an existing category."
+                "Invalid category name",
+                "A category with name NonExistentCategory was not found"
             );
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);

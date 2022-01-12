@@ -1,14 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Common.Validation;
 using TaskManager.Common.Validation.ValidationModel;
 using TaskManager.Database;
-using TaskManager.Models.Domain.Categories;
 using TaskManager.Models.Domain.Task;
+using TaskManager.Repositories;
 using Task = TaskManager.Models.Domain.Task.Task;
 
 namespace TaskManager.Controllers
@@ -31,27 +29,9 @@ namespace TaskManager.Controllers
         {
             var existingCategory = await _categoryRepo.GetCategory(task.Category);
 
-            if (existingCategory == null)
-            {
-                return new ValidationResult(
-                    "Invalid category",
-                    400,
-                    new List<ValidationError> { new ($"Invalid category {task.Category}. You must use an existing category.") }
-                );
-            }
+            await _repo.CheckIfExists(task.Name);
 
-            var existingTask = await _repo.GetTask(task.Name);
-
-            if (existingTask != null)
-            {
-                return new ValidationResult(
-                    "Duplicate task error",
-                    400,
-                    new List<ValidationError> { new ($"A task with name {task.Name} already exists.") }
-                );
-            }
-
-            var createdTask = task.ToCreatedTask(existingCategory);
+            var createdTask = task.ToCreatedTask(existingCategory!);
 
             await _repo.AddTask(createdTask);
 
@@ -83,16 +63,7 @@ namespace TaskManager.Controllers
         {
             var task = await _repo.GetTask(name);
 
-            if (task == null)
-            {
-                return new ValidationResult(
-                    "Invalid id",
-                    404,
-                    new List<ValidationError> { new ($"A task with name {name} does not exist.") }
-                );
-            }
-
-            return new JsonResult(task.ToQueryObject());
+            return new JsonResult(task!.ToQueryObject());
         }
     }
 }

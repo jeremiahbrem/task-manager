@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Common.Exceptions;
 using TaskManager.Database;
+using TaskManager.Models.Domain.Task;
+using Threading = System.Threading.Tasks;
 
-namespace TaskManager.Models.Domain.Task
+namespace TaskManager.Repositories
 {
     public class TaskRepository
     {
@@ -15,16 +17,32 @@ namespace TaskManager.Models.Domain.Task
             _context = context;
         }
 
-        public async Task<Task?> GetTask(string name)
+        public async Threading.Task<Task?> GetTask(string name)
         {
             var existingTask = await _context.Tasks
                 .Include(x => x.Category)
                 .FirstOrDefaultAsync(x => x.Name == name);
 
+            if (existingTask == null)
+            {
+                throw new TaskNotFoundException(name);
+            }
+
             return existingTask;
         }
 
-        public async Task<List<Task>> GetTasks()
+        public async Threading.Task CheckIfExists(string name)
+        {
+            var existingTask = await _context.Tasks
+                .FirstOrDefaultAsync(x => x.Name == name);
+
+            if (existingTask != null)
+            {
+                throw new TaskAlreadyExistsException(name);
+            }
+        }
+
+        public async Threading.Task<List<Task>> GetTasks()
         {
             var result = await _context.Set<Task>()
                 .AsNoTracking()
@@ -34,7 +52,7 @@ namespace TaskManager.Models.Domain.Task
             return result;
         }
 
-        public async Task<List<Task>> GetTasks(string category)
+        public async Threading.Task<List<Task>> GetTasks(string category)
         {
             var result = await _context.Set<Task>()
                 .AsNoTracking()
@@ -45,7 +63,7 @@ namespace TaskManager.Models.Domain.Task
             return result;
         }
 
-        public async System.Threading.Tasks.Task AddTask(Task task)
+        public async Threading.Task AddTask(Task task)
         {
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();

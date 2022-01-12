@@ -1,5 +1,6 @@
 using System;
 using FluentAssertions;
+using TaskManager.Common.Exceptions;
 using TaskManager.Common.Validation;
 using TaskManager.Models.Domain.Categories;
 using TaskManager.Models.Domain.ScheduledTask;
@@ -97,7 +98,7 @@ namespace TaskManager.Tests.Models
             };
 
             var func = new Action(() => scheduledTask.Complete());
-            func.Should().Throw<ValidationException>()
+            func.Should().Throw<PrecedingNotCompleteException>()
                 .And.Errors.Should().BeEquivalentTo(new object[]
                 {
                     new { Message = "You must complete the preceding task first" }

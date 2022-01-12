@@ -43,8 +43,8 @@ namespace TaskManager.Tests.Integration.Users
             var result = await GetJsonObject<ValidationResponse>(response);
 
             var expected = CreateExpectedResponse(
-                "Duplicate email error",
-                "A user with email john.doe@example.com already exists."
+                "Invalid email",
+                "A user with email john.doe@example.com already exists"
             );
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);

@@ -6,8 +6,8 @@ namespace TaskManager.Common.Validation
 
     public sealed class ValidationException : Exception
     {
-        public ValidationException(params ValidationError[] errors)
-            : base("Validation failed")
+        public ValidationException(string message, params ValidationError[] errors)
+            : base(message)
         {
             Errors = errors;
         }

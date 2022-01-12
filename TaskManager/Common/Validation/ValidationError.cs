@@ -9,9 +9,9 @@ namespace TaskManager.Common.Validation
             Message = message;
         }
 
-        public ValidationException ToException()
+        public ValidationException ToException(string message)
         {
-            return new ValidationException(this);
+            return new ValidationException(message, this);
         }
     }
 }

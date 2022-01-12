@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TaskManager.Auth;
 using TaskManager.Common;
+using TaskManager.Common.Exceptions;
 using TaskManager.Database;
 using TaskManager.Models;
 using TaskManager.Models.Domain.ScheduledTask;
@@ -48,6 +49,7 @@ namespace TaskManager
 
             app.UseAuthorization();
             app.UseMiddleware<ScheduledTaskMiddleware>();
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

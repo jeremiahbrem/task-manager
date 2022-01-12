@@ -19,10 +19,10 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             var ctx = Server.CreateDbContext();
             var scheduledTask = await SetupData(ctx);
             var id = scheduledTask.ScheduledTaskId;
-            var route = "/api/scheduled-tasks/complete";
+            var route = $"/api/scheduled-tasks/complete/{id}";
             var email = scheduledTask.User.Email;
 
-            var content = CreateContent(new { Id = id });
+            var content = CreateContent(new { });
 
             scheduledTask.PrecedingTask!.Complete();
             ctx.Update(scheduledTask);
@@ -46,14 +46,14 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             var ctx = Server.CreateDbContext();
             var scheduledTask = await SetupData(ctx);
             var id = scheduledTask.ScheduledTaskId;
-            var route = "/api/scheduled-tasks/complete";
+            var route = $"/api/scheduled-tasks/complete/{id}";
             var email = scheduledTask.User.Email;
 
-            var content = CreateContent(new { Id = id });
+            var content = CreateContent(new { });
 
             var response = await SendPostRequest(route, content, email);
             var result = await GetJsonObject<ValidationResponse>(response);
-            var expected = CreateExpectedResponse("Validation failed", "You must complete the preceding task first");
+            var expected = CreateExpectedResponse("Complete scheduled task error", "You must complete the preceding task first");
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             result.Should().BeEquivalentTo(expected);

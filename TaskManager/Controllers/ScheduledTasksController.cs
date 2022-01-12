@@ -8,8 +8,7 @@ using TaskManager.Common.Validation;
 using TaskManager.Common.Validation.ValidationModel;
 using TaskManager.Database;
 using TaskManager.Models.Domain.ScheduledTask;
-using TaskManager.Models.Domain.Task;
-using TaskManager.Models.Domain.User;
+using TaskManager.Repositories;
 
 namespace TaskManager.Controllers
 {
@@ -36,16 +35,6 @@ namespace TaskManager.Controllers
         public async Task<ActionResult> PostCreate([FromBody]ScheduledTaskCreate scheduledTask)
         {
             var existingTask = await _taskRepo.GetTask(scheduledTask.Task);
-
-            if (existingTask == null)
-            {
-                return new ValidationResult(
-                    "Invalid task",
-                    400,
-                    new List<ValidationError> { new ($"Invalid task {scheduledTask.Task}. You must use an existing task.") }
-                );
-            }
-
             var existingUser = await _userRepo.GetUser(_user.Email!);
 
             var precedingId = 0;
@@ -53,28 +42,18 @@ namespace TaskManager.Controllers
             if (scheduledTask.PrecedingId != null)
             {
                 var existingScheduledTask = await _repo.GetScheduledTask(scheduledTask.PrecedingId);
-
-                if (existingScheduledTask == null)
-                {
-                    return new ValidationResult(
-                        "Invalid preceding id",
-                        400,
-                        new List<ValidationError> { new ($"A scheduled task with id {scheduledTask.PrecedingId} does not exist.") }
-                    );
-                }
-
-                precedingId = existingScheduledTask.Id;
+                await _repo.VerifyUserEmail(scheduledTask.PrecedingId);
+                precedingId = existingScheduledTask!.Id;
             }
 
             var createdScheduledTask = scheduledTask.ToCreatedScheduledTask(
                 Guid.NewGuid().ToString(),
-                existingTask,
+                existingTask!,
                 existingUser!,
                 precedingId > 0 ? precedingId : null
             );
 
             await _repo.AddScheduledTask(createdScheduledTask);
-
             return new ValidationResult($"Scheduled task {createdScheduledTask.ScheduledTaskId} created.", 200);
         }
 
@@ -82,24 +61,9 @@ namespace TaskManager.Controllers
         public async Task<ActionResult> GetTask(string id)
         {
             var existingScheduledTask = await _repo.GetScheduledTask(id);
+            await _repo.VerifyUserEmail(id);
 
-            if (existingScheduledTask == null)
-            {
-                return new ValidationResult(
-                    "Invalid id",
-                    404,
-                    new List<ValidationError> { new ($"A scheduled task with id {id} does not exist.") }
-                );
-            }
-
-            var validUser = await _repo.GetUserEmail(id);
-
-            if (validUser != _user.Email)
-            {
-                return ReturnUnauthorized();
-            }
-
-            return new JsonResult(existingScheduledTask.ToQueryObject());
+            return new JsonResult(existingScheduledTask!.ToQueryObject());
         }
 
         [HttpGet]
@@ -121,50 +85,16 @@ namespace TaskManager.Controllers
             return new JsonResult(tasks);
         }
 
-        [HttpPost("complete")]
-        public async Task<ActionResult> CompleteScheduledTask([FromBody]ScheduledTaskComplete scheduledTask)
+        [HttpPost("complete/{id}")]
+        public async Task<ActionResult> CompleteScheduledTask(string id)
         {
-            var id = scheduledTask.Id;
-
             var existingScheduledTask = await _repo.GetScheduledTask(id);
+            await _repo.VerifyUserEmail(id);
 
-            if (existingScheduledTask == null)
-            {
-                return new ValidationResult(
-                    "Invalid id",
-                    404,
-                    new List<ValidationError> { new ($"A scheduled task with id {id} does not exist.") }
-                );
-            }
-
-            var validUser = await _repo.GetUserEmail(id);
-
-            if (validUser != _user.Email)
-            {
-                return ReturnUnauthorized();
-            }
-
-            try
-            {
-                existingScheduledTask.Complete();
-            }
-            catch (ValidationException e)
-            {
-                return new ValidationResult(e.Message, 400, e.Errors);
-            }
-
+            existingScheduledTask!.Complete();
             await _repo.UpdateScheduledTask(existingScheduledTask);
 
             return new ValidationResult($"Scheduled task {id} completed.", 200);
-        }
-
-        private ValidationResult ReturnUnauthorized()
-        {
-            return new ValidationResult(
-                "Unauthorized",
-                401,
-                new List<ValidationError> { new ("You are not authorized to access this scheduled task.") }
-            );
         }
     }
 }

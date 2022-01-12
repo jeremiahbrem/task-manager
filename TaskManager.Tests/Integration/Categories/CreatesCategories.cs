@@ -41,8 +41,8 @@ namespace TaskManager.Tests.Integration.Categories
             var result = await GetJsonObject<ValidationResponse>(response);
 
             var expected = CreateExpectedResponse(
-                "Duplicate category error",
-                "A category with name CategoryOne already exists."
+                "Invalid category name",
+                "A category with name CategoryOne already exists"
             );
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             result.Should().BeEquivalentTo(expected);

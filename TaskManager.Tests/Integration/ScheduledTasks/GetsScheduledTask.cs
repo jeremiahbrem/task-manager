@@ -46,32 +46,32 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
         }
 
         [Fact]
-        public async Task ReturnsUnauthorizedWithUnknownEmail()
+        public async Task ReturnsForbiddenWithUnknownEmail()
         {
             var scheduledTask = await SetupData();
-            var expected = CreateExpectedResponse("Unauthorized", "A user with email unknown@example.com does not exist");
             var id = scheduledTask.ScheduledTaskId;
+            var expected = CreateExpectedResponse("Unauthorized", $"You are not authorized to access scheduled task {id}");
 
             var response = await SendGetRequest($"/api/scheduled-tasks/{id}", "unknown@example.com");
             var result = await GetJsonObject<ValidationResponse>(response);
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
             result.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
-        public async Task ReturnsUnauthorized()
+        public async Task ReturnsForbidden()
         {
             var scheduledTask = await SetupData();
             var id = scheduledTask.ScheduledTaskId;
             await CreateUser("John", "Doe", "other@example.com", Server.CreateDbContext());
 
-            var expected = CreateExpectedResponse("Unauthorized", "You are not authorized to access this scheduled task.");
+            var expected = CreateExpectedResponse("Unauthorized", $"You are not authorized to access scheduled task {id}");
 
             var response = await SendGetRequest($"/api/scheduled-tasks/{id}", "other@example.com");
             var result = await GetJsonObject<ValidationResponse>(response);
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
             result.Should().BeEquivalentTo(expected);
         }
 
@@ -80,7 +80,7 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
         {
             var scheduledTask = await SetupData();
             var email = scheduledTask.User.Email;
-            var expected = CreateExpectedResponse("Invalid id", "A scheduled task with id unknownId does not exist.");
+            var expected = CreateExpectedResponse("Invalid scheduled task id", "A scheduled task with id unknownId was not found");
 
             var response = await SendGetRequest("/api/scheduled-tasks/unknownId", email);
             var result = await GetJsonObject<ValidationResponse>(response);

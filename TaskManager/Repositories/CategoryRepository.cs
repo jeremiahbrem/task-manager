@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TaskManager.Common.Exceptions;
 using TaskManager.Database;
+using TaskManager.Models.Domain.Categories;
 
-namespace TaskManager.Models.Domain.Categories
+namespace TaskManager.Repositories
 {
     public class CategoryRepository
     {
@@ -19,7 +21,23 @@ namespace TaskManager.Models.Domain.Categories
             var existingCategory = await _context.Categories
                 .FirstOrDefaultAsync(x => x.Name == name);
 
+            if (existingCategory == null)
+            {
+                throw new CategoryNotFoundException(name);
+            }
+
             return existingCategory;
+        }
+
+        public async Task CheckIfExists(string name)
+        {
+            var existingCategory = await _context.Categories
+                .FirstOrDefaultAsync(x => x.Name == name);
+
+            if (existingCategory != null)
+            {
+                throw new CategoryAlreadyExistsException(name);
+            }
         }
 
         public async Task<List<Category>> GetCategories()

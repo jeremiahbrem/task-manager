@@ -59,8 +59,8 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             };
 
             var expected = CreateExpectedResponse(
-                "Invalid task",
-                "Invalid task unknownTask. You must use an existing task."
+                "Invalid task name",
+                "A task with name unknownTask was not found"
             );
 
             var (response, result) = await GetResponse(scheduledTask, user.Email);
@@ -74,7 +74,7 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             var context = Server.CreateDbContext();
 
             var task  = await CreateTask("Test Task", "Category One", context);
-            var uknownEmail = "unknown@example.com";
+            var unknownEmail = "unknown@example.com";
 
             var scheduledTask = new
             {
@@ -82,12 +82,12 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             };
 
             var expected = CreateExpectedResponse(
-                "Unauthorized",
-                "A user with email unknown@example.com does not exist"
+                "Invalid email",
+                "A user with email unknown@example.com was not found"
             );
 
-            var (response, result) = await GetResponse(scheduledTask, uknownEmail);
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            var (response, result) = await GetResponse(scheduledTask, unknownEmail);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             result.Should().BeEquivalentTo(expected);
         }
 
@@ -106,12 +106,39 @@ namespace TaskManager.Tests.Integration.ScheduledTasks
             };
 
             var expected = CreateExpectedResponse(
-                "Invalid preceding id",
-                "A scheduled task with id abc123 does not exist."
+                "Invalid scheduled task id",
+                "A scheduled task with id abc123 was not found"
             );
 
             var (response, result) = await GetResponse(scheduledTask, user.Email);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            result.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public async Task SendsUnauthorizedPrecedingError()
+        {
+            var context = Server.CreateDbContext();
+
+            var task  = await CreateTask("Test Task", "Category One", context);
+            var precedingTaskUser = await CreateUser("Jane", "Doe", "jane.doe@example.com", context);
+            var id = Guid.NewGuid().ToString();
+            var precedingScheduledTask = await CreateScheduledTask(task, precedingTaskUser, context, null, id);
+
+            var scheduledTask = new
+            {
+                Task = task.Name,
+                PrecedingId = precedingScheduledTask.ScheduledTaskId
+            };
+
+            var expected = CreateExpectedResponse(
+                "Unauthorized",
+                $"You are not authorized to access scheduled task {precedingScheduledTask.ScheduledTaskId}"
+            );
+
+            var otherUser = await CreateUser("John", "Doe", "john.doe@example.com", context);
+            var (response, result) = await GetResponse(scheduledTask, otherUser.Email);
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
             result.Should().BeEquivalentTo(expected);
         }
 

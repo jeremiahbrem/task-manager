@@ -1,4 +1,5 @@
 using System;
+using TaskManager.Common.Exceptions;
 using TaskManager.Common.Validation;
 
 namespace TaskManager.Models.Domain.ScheduledTask
@@ -32,7 +33,7 @@ namespace TaskManager.Models.Domain.ScheduledTask
         {
             if (PrecedingTask != null && !PrecedingTask.Completed)
             {
-                throw new ValidationError("You must complete the preceding task first").ToException();
+                throw new PrecedingNotCompleteException();
             }
 
             Completed = true;

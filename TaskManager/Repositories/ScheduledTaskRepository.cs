@@ -1,12 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Auth;
+using TaskManager.Common.Exceptions;
 using TaskManager.Database;
+using TaskManager.Models.Domain.ScheduledTask;
 
-namespace TaskManager.Models.Domain.ScheduledTask
+namespace TaskManager.Repositories
 {
     public class ScheduledTaskRepository
     {
@@ -29,6 +30,11 @@ namespace TaskManager.Models.Domain.ScheduledTask
                 .ThenInclude(x => x.Task)
                 .FirstOrDefaultAsync(x => x.ScheduledTaskId == id);
 
+            if (existingTask == null)
+            {
+                throw new ScheduledTaskNotFoundException(id);
+            }
+
             return existingTask;
         }
 
@@ -40,6 +46,19 @@ namespace TaskManager.Models.Domain.ScheduledTask
                 .FirstOrDefaultAsync();
 
             return email;
+        }
+
+        public async Task VerifyUserEmail(string id)
+        {
+            var email = await _context.ScheduledTasks
+                .Where(x => x.ScheduledTaskId == id)
+                .Select(x => x.User.Email)
+                .FirstOrDefaultAsync();
+
+            if (email != _user.Email)
+            {
+                throw new ScheduledTaskUnauthorizedException(id);
+            }
         }
 
         public async Task<List<ScheduledTask>> GetScheduledTasks()

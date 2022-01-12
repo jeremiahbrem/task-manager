@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +5,7 @@ using TaskManager.Common.Validation;
 using TaskManager.Common.Validation.ValidationModel;
 using TaskManager.Database;
 using TaskManager.Models.Domain.Categories;
+using TaskManager.Repositories;
 
 namespace TaskManager.Controllers
 {
@@ -23,16 +23,7 @@ namespace TaskManager.Controllers
         [HttpPost("create")]
         public async Task<ActionResult> PostCreate([FromBody]Category category)
         {
-            var existingCategory = await _repo.GetCategory(category.Name);
-
-            if (existingCategory != null)
-            {
-                return new ValidationResult(
-                    "Duplicate category error",
-                    400,
-                    new List<ValidationError> { new ($"A category with name {category.Name} already exists.") }
-                );
-            }
+            await _repo.CheckIfExists(category.Name);
 
             await _repo.AddCategory(category);
 

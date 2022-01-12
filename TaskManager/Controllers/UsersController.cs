@@ -6,6 +6,7 @@ using TaskManager.Common.Validation;
 using TaskManager.Common.Validation.ValidationModel;
 using TaskManager.Database;
 using TaskManager.Models.Domain.User;
+using TaskManager.Repositories;
 
 namespace TaskManager.Controllers
 {
@@ -23,16 +24,7 @@ namespace TaskManager.Controllers
         [HttpPost("create")]
         public async Task<ActionResult> PostCreate([FromBody]UserCreate user)
         {
-            var existingUser = await _repo.GetUser(user.Email);
-
-            if (existingUser != null)
-            {
-                return new ValidationResult(
-                    "Duplicate email error",
-                    400,
-                    new List<ValidationError> { new ($"A user with email {user.Email} already exists.") }
-                );
-            }
+            await _repo.CheckIfExists(user.Email);
 
             var createdUser = user.ToCreatedUser();
 
@@ -56,16 +48,7 @@ namespace TaskManager.Controllers
         {
             var user = await _repo.GetUser(email);
 
-            if (user == null)
-            {
-                return new ValidationResult(
-                    "Invalid email",
-                    404,
-                    new List<ValidationError> { new ($"A user with email {email} does not exist.") }
-                );
-            }
-
-            return new JsonResult(user.ToQueryObject());
+            return new JsonResult(user!.ToQueryObject());
         }
     }
 }
