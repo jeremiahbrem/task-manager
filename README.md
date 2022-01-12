@@ -87,7 +87,7 @@ Example request with designating a preceding scheduled task:
 }
 ```
 
-**GET** Scheduled task: `/api/scheduled-tasks{id}`   
+**GET** Scheduled task: `/api/scheduled-tasks/{id}`   
 Example request:
 ```
 http://localhost:5000/api/scheduled-tasks/7746615b-6359-45fa-900c-3053f494b8db`
