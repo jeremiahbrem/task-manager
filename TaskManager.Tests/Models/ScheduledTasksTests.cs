@@ -1,5 +1,6 @@
 using System;
 using FluentAssertions;
+using TaskManager.Commands;
 using TaskManager.Common.Exceptions;
 using TaskManager.Common.Validation;
 using TaskManager.Models.Domain.Categories;

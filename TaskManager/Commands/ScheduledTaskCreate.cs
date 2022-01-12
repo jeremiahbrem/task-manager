@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using TaskManager.Models.Domain.ScheduledTask;
 
-namespace TaskManager.Models.Domain.ScheduledTask
+namespace TaskManager.Commands
 {
     public class ScheduledTaskCreate
     {
@@ -10,8 +11,8 @@ namespace TaskManager.Models.Domain.ScheduledTask
 
         public ScheduledTask ToCreatedScheduledTask(
             string id,
-            Task.Task task,
-            User.User user,
+            Models.Domain.Task.Task task,
+            Models.Domain.User.User user,
             int? precedingId)
         {
             return new ScheduledTask()

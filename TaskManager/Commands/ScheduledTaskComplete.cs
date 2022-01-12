@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TaskManager.Models.Domain.ScheduledTask
+namespace TaskManager.Commands
 {
     public class ScheduledTaskComplete
     {

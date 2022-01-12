@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using TaskManager.Models.Domain.User;
 
-namespace TaskManager.Models.Domain.User
+namespace TaskManager.Commands
 {
     public class UserCreate
     {

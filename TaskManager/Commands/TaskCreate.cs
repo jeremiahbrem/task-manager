@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using TaskManager.Models.Domain.Categories;
+using TaskManager.Models.Domain.Task;
 
-namespace TaskManager.Models.Domain.Task
+namespace TaskManager.Commands
 {
     public class TaskCreate
     {
