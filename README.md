@@ -26,7 +26,7 @@ In the root folder:
 cd TaskManager
 dotnet run
 ```
-The project is not running at `localhost:5000`.
+The project is now running at `localhost:5000`.
 ## Routes
 **POST** Create User: `/api/users/create`    
 Example request:
